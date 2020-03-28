@@ -16,6 +16,15 @@ namespace FakeXiecheng.API.Services
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
+        public bool TouristRouteExists(Guid touristRouteId)
+        {
+            if (touristRouteId == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(touristRouteId));
+            }
+            return _context.TouristRoutes.Any(t => t.Id == touristRouteId);
+        }
+
         public IEnumerable<TouristRoute> GetAllTouristRoutes()
         {
             return _context.TouristRoutes

@@ -6,6 +6,7 @@ namespace FakeXiecheng.API.Services
 {
     public interface ITouristRouteRepository
     {
+        bool TouristRouteExists(Guid touristRouteId);
         IEnumerable<TouristRoute> GetAllTouristRoutes();
         TouristRoute GetTouristRoute(Guid routeId);
         void AddTouristRoute(TouristRoute route);

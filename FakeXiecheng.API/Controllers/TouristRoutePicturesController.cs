@@ -30,11 +30,15 @@ namespace FakeXiecheng.API.Controllers
         // GET: /<controller>/
         public IActionResult GetPictures(Guid touristRouteId)
         {
-            var picturesFromRepo = _touristRouteRepository.GetPicturesByTouristRouteId(touristRouteId);
+            if (!_touristRouteRepository.TouristRouteExists(touristRouteId))
+            {
+                return NotFound("no tourist route found");
+            }
 
+            var picturesFromRepo = _touristRouteRepository.GetPicturesByTouristRouteId(touristRouteId);
             if (picturesFromRepo == null || picturesFromRepo.Count() <= 0)
             {
-                return NotFound();
+                return NotFound("no picture found");
             }
 
             return Ok(_mapper.Map<IEnumerable<TouristRoutePictureDto>>(picturesFromRepo));
