@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using FakeXiecheng.API.Dtos;
 using FakeXiecheng.API.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -13,11 +14,17 @@ namespace FakeXiecheng.API.Controllers
     public class TouristRoutesController : Controller //ControllerBase
     {
         private ITouristRouteRepository _touristRouteRepository;
+        private IMapper _mapper;
 
-        public TouristRoutesController(ITouristRouteRepository touristRouteRepository)
+        public TouristRoutesController(
+            ITouristRouteRepository touristRouteRepository,
+            IMapper mapper
+        )
         {
             _touristRouteRepository = touristRouteRepository ??
                 throw new ArgumentNullException(nameof(touristRouteRepository));
+            _mapper = mapper ??
+                throw new ArgumentNullException(nameof(mapper));
         }
 
         [HttpGet]
@@ -37,7 +44,6 @@ namespace FakeXiecheng.API.Controllers
             //            Url = picture.Url
             //        });
             //    }
-
             //    touristRoutes.Add(new TouristRouteDto()
             //    {
             //        Id = touristRoute.Id,
@@ -53,30 +59,32 @@ namespace FakeXiecheng.API.Controllers
             //        Fees = touristRoute.Fees,
             //        Notes = touristRoute.Notes,
             //        Pictures = touristRoutePictures
-
             //    });
             //}
 
             // using Linq
-            var touristRoutes = touristRoutesFromRepo.Select(t => new TouristRouteDto()
-            {
-                Id = t.Id,
-                Title = t.Title,
-                Description = t.Description,
-                OriginalPrice = t.OriginalPrice,
-                DiscountPercent = t.DiscountPercent,
-                Price = t.OriginalPrice * (decimal)(t.DiscountPercent ??= 1),
-                Coupons = t.Coupons,
-                Points = t.Points,
-                Rating = t.Rating,
-                Features = t.Features,
-                Fees = t.Fees,
-                Notes = t.Notes,
-                Pictures = t.TouristRoutePictures.Select(p => new TouristRoutePictureDto()
-                {
-                    Url = p.Url
-                }).ToList()
-            }).ToList();
+            //var touristRoutes = touristRoutesFromRepo.Select(t => new TouristRouteDto()
+            //{
+            //    Id = t.Id,
+            //    Title = t.Title,
+            //    Description = t.Description,
+            //    OriginalPrice = t.OriginalPrice,
+            //    DiscountPercent = t.DiscountPercent,
+            //    Price = t.OriginalPrice * (decimal)(t.DiscountPercent ?? 1),
+            //    Coupons = t.Coupons,
+            //    Points = t.Points,
+            //    Rating = t.Rating,
+            //    Features = t.Features,
+            //    Fees = t.Fees,
+            //    Notes = t.Notes,
+            //    Pictures = t.TouristRoutePictures.Select(p => new TouristRoutePictureDto()
+            //    {
+            //        Url = p.Url
+            //    }).ToList()
+            //}).ToList();
+
+            // using auto mapper
+            var touristRoutes = _mapper.Map<IEnumerable<TouristRouteDto>>(touristRoutesFromRepo);
 
             return Ok(touristRoutes);
         }
@@ -84,14 +92,14 @@ namespace FakeXiecheng.API.Controllers
         [HttpGet("{routeId}")]
         public IActionResult GetTouristRoute(Guid routeId)
         {
-            var authorFromRepo = _touristRouteRepository.GetTouristRoute(routeId);
+            var touristRouteFromRepo = _touristRouteRepository.GetTouristRoute(routeId);
 
-            if (authorFromRepo == null)
+            if (touristRouteFromRepo == null)
             {
                 return NotFound();
             }
 
-            return Ok(authorFromRepo);
+            return Ok(_mapper.Map<TouristRouteDto>(touristRouteFromRepo));
         }
     }
 }

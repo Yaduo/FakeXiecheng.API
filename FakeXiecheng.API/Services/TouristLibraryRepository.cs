@@ -29,7 +29,10 @@ namespace FakeXiecheng.API.Services
             {
                 throw new ArgumentNullException(nameof(routeId));
             }
-            return _context.TouristRoutes.Where(c => c.Id == routeId).FirstOrDefault();
+            return _context.TouristRoutes
+                .Include(t => t.TouristRoutePictures)
+                .Where(c => c.Id == routeId)
+                .FirstOrDefault();
         }
 
         public void AddTouristRoute(TouristRoute route)

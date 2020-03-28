@@ -1,3 +1,5 @@
+using System;
+using AutoMapper;
 using FakeXiecheng.API.DbContexts;
 using FakeXiecheng.API.Services;
 using Microsoft.AspNetCore.Builder;
@@ -27,6 +29,8 @@ namespace FakeXiecheng.API
                 setupAction.ReturnHttpNotAcceptable = true;
 
             }).AddXmlDataContractSerializerFormatters();
+
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             services.AddScoped<ITouristRouteRepository, TouristRouteRepository>();
 
