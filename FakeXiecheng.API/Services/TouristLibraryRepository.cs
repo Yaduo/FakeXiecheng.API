@@ -1,5 +1,6 @@
 ﻿using FakeXiecheng.API.DbContexts;
 using FakeXiecheng.API.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,9 @@ namespace FakeXiecheng.API.Services
 
         public IEnumerable<TouristRoute> GetAllTouristRoutes()
         {
-            return _context.TouristRoutes.OrderBy(c => c.Title).ToList();
+            return _context.TouristRoutes
+                .Include(t => t.TouristRoutePictures)
+                .OrderBy(t => t.Title).ToList();
         }
 
         public TouristRoute GetTouristRoute(Guid routeId)
