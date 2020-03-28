@@ -54,6 +54,13 @@ namespace FakeXiecheng.API.Services
             _context.TouristRoutes.Remove(route);
         }
 
+        public IEnumerable<TouristRoutePicture> GetPicturesByTouristRouteId(Guid touristRouteId)
+        {
+            return _context.TouristRoutePictures
+                .Where(p => p.TouristRouteId == touristRouteId)
+                .ToList();
+        }
+
         public bool Save()
         {
             return (_context.SaveChanges() >= 0);
