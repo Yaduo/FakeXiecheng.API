@@ -23,7 +23,20 @@ namespace FakeXiecheng.API.Controllers
         public IActionResult GetTouristRoutes()
         {
             var touristRoutes = _touristRouteRepository.GetAllTouristRoutes();
-            return new JsonResult(touristRoutes);
+            return Ok(touristRoutes);
+        }
+
+        [HttpGet("{routeId}")]
+        public IActionResult GetTouristRoute(Guid routeId)
+        {
+            var authorFromRepo = _touristRouteRepository.GetTouristRoute(routeId);
+
+            if (authorFromRepo == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(authorFromRepo);
         }
     }
 }
