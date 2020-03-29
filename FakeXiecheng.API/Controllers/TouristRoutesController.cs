@@ -166,6 +166,25 @@ namespace FakeXiecheng.API.Controllers
             return Ok(_mapper.Map<TouristRouteDto>(touristRouteFromRepo));
         }
 
+        [HttpGet("collection/({ids})", Name = "GetAuthorCollection")]
+        public IActionResult GetAuthorCollection(
+            [FromRoute][ModelBinder(BinderType = typeof(ArrayModelBinder))] IEnumerable<Guid> ids)
+        {
+            if (ids == null)
+            {
+                return BadRequest();
+            }
+
+            var touristRoute = _touristRouteRepository.GetTouristRoutesByIdList(ids);
+
+            if (ids.Count() != touristRoute.Count())
+            {
+                return NotFound();
+            }
+
+            return Ok(_mapper.Map<IEnumerable<TouristRouteDto>>(touristRoute));
+        }
+
         [HttpPost]
         public IActionResult CreateAuthor(TouristRouteForCreationDto touristRouteDto)
         {

@@ -87,6 +87,15 @@ namespace FakeXiecheng.API.Services
                 );
         }
 
+        public IEnumerable<TouristRoute> GetTouristRoutesByIdList(IEnumerable<Guid> touristRouteIds)
+        {
+            if (touristRouteIds == null)
+            {
+                throw new ArgumentNullException(nameof(touristRouteIds));
+            }
+            return _context.TouristRoutes.Where(t => touristRouteIds.Contains(t.Id)).ToList();
+        }
+
         public TouristRoute GetTouristRoute(Guid routeId)
         {
             if (routeId == Guid.Empty)
