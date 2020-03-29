@@ -42,6 +42,9 @@ namespace FakeXiecheng.API.Helpers
             }
         }
 
+        /**
+         * 关键词搜索
+         */
         public string Keyword { get; set; }
 
         /**
@@ -88,5 +91,10 @@ namespace FakeXiecheng.API.Helpers
                 _rating = value;
             }
         }
+
+        /**
+         * 排序
+         */
+        public string OrderBy { get; set; } = "Title";
     }
 }

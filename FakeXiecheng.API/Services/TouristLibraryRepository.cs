@@ -1,4 +1,5 @@
 ﻿using FakeXiecheng.API.DbContexts;
+using FakeXiecheng.API.Dtos;
 using FakeXiecheng.API.Helpers;
 using FakeXiecheng.API.Models;
 using Microsoft.EntityFrameworkCore;
@@ -11,10 +12,15 @@ namespace FakeXiecheng.API.Services
     public class TouristRouteRepository : ITouristRouteRepository, IDisposable
     {
         private readonly TouristLibraryContext _context;
+        private readonly IPropertyMappingService _propertyMappingService;
 
-        public TouristRouteRepository(TouristLibraryContext context)
+        public TouristRouteRepository(
+            TouristLibraryContext context,
+            IPropertyMappingService propertyMappingService
+        )
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            _propertyMappingService = propertyMappingService ?? throw new ArgumentNullException(nameof(propertyMappingService));
         }
 
         public bool TouristRouteExists(Guid touristRouteId)
@@ -28,7 +34,13 @@ namespace FakeXiecheng.API.Services
 
         public PaginationList<TouristRoute> GetTouristRoutes(TouristRouteFilterParameters filterParameters)
         {
-            IQueryable<TouristRoute> collectionBeforePaging = _context.TouristRoutes.Include(t => t.TouristRoutePictures);
+            //IQueryable<TouristRoute> collectionBeforePaging =
+            //    _context.TouristRoutes
+            //    .Include(t => t.TouristRoutePictures);
+
+            IQueryable<TouristRoute> collectionBeforePaging =
+                _context.TouristRoutes.ApplySort(filterParameters.OrderBy,
+                _propertyMappingService.GetPropertyMapping<TouristRouteDto, TouristRoute>());
             // filter keyword
             if (!string.IsNullOrEmpty(filterParameters.Keyword))
             {
