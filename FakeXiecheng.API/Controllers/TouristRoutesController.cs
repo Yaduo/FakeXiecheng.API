@@ -29,10 +29,9 @@ namespace FakeXiecheng.API.Controllers
 
         [HttpGet]
         [HttpHead]
-        public IActionResult GetTouristRoutes()
+        public IActionResult GetTouristRoutes([FromQuery] string keyword)
         {
-            var touristRoutesFromRepo = _touristRouteRepository.GetAllTouristRoutes();
-
+            var touristRoutesFromRepo = _touristRouteRepository.GetTouristRoutes(keyword);
             // use for loop 
             //var touristRoutes = new List<TouristRouteDto>();
             //foreach(var touristRoute in touristRoutesFromRepo)

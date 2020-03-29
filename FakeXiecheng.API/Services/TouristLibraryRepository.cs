@@ -25,11 +25,15 @@ namespace FakeXiecheng.API.Services
             return _context.TouristRoutes.Any(t => t.Id == touristRouteId);
         }
 
-        public IEnumerable<TouristRoute> GetAllTouristRoutes()
+        public IEnumerable<TouristRoute> GetTouristRoutes(string keyword)
         {
-            return _context.TouristRoutes
-                .Include(t => t.TouristRoutePictures)
-                .OrderBy(t => t.Title).ToList();
+            IQueryable<TouristRoute> result = _context.TouristRoutes.Include(t => t.TouristRoutePictures);
+            if (keyword != null && keyword != "")
+            {
+                keyword = keyword.Trim();
+                result = result.Where(c => c.Title.Contains(keyword));
+            }
+            return result.ToList();
         }
 
         public TouristRoute GetTouristRoute(Guid routeId)
