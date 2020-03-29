@@ -18,7 +18,10 @@ namespace FakeXiecheng.API.Profiles
                 .ForMember(
                     dest => dest.Pictures,
                     // TODO: 应该用automapper来映射
-                    opt => opt.MapFrom(src => src.TouristRoutePictures.Select(p => new TouristRoutePictureDto() { Url = p.Url })))
+                    opt => opt.MapFrom(src => src.TouristRoutePictures.Select(p => new TouristRoutePictureDto() {
+                        Id = p.Id,
+                        Url = p.Url
+                    })))
                 ;
 
             CreateMap<TouristRouteForCreationDto, TouristRoute>()

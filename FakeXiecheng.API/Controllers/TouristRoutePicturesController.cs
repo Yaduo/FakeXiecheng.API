@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using FakeXiecheng.API.Dtos;
+using FakeXiecheng.API.Models;
 using FakeXiecheng.API.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -42,6 +43,41 @@ namespace FakeXiecheng.API.Controllers
             }
 
             return Ok(_mapper.Map<IEnumerable<TouristRoutePictureDto>>(picturesFromRepo));
+        }
+
+        [HttpGet("{pictureId}", Name = "GetPictureForTouristRoute")]
+        public IActionResult GetPictures(Guid touristRouteId, int pictureId)
+        {
+            if (!_touristRouteRepository.TouristRouteExists(touristRouteId))
+            {
+                return NotFound("no tourist route found");
+            }
+            var pictureFromRepo = _touristRouteRepository.GetPicturesByTouristRouteIdAndPictureId(touristRouteId, pictureId);
+            if (pictureFromRepo == null)
+            {
+                return NotFound("no picture found");
+            }
+            return Ok(_mapper.Map<TouristRoutePictureDto>(pictureFromRepo));
+        }
+
+
+        [HttpPost]
+        public ActionResult CreatePictureForAuthor(Guid touristRouteId, TouristRoutePictureForCreationDto picture)
+        {
+            if (!_touristRouteRepository.TouristRouteExists(touristRouteId))
+            {
+                return NotFound("no tourist route found");
+            }
+
+            var pictureModel = _mapper.Map<TouristRoutePicture>(picture);
+            _touristRouteRepository.AddTouristRoutePicture(touristRouteId, pictureModel);
+            _touristRouteRepository.Save();
+            var pictureToReturn = _mapper.Map<TouristRoutePictureDto>(pictureModel);
+            return CreatedAtRoute(
+                    "GetPictureForTouristRoute",
+                    new { touristRouteId, pictureId = pictureToReturn.Id },
+                    pictureToReturn
+                );
         }
     }
 }

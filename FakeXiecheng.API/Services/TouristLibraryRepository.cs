@@ -38,9 +38,9 @@ namespace FakeXiecheng.API.Services
             //    _context.TouristRoutes
             //    .Include(t => t.TouristRoutePictures);
 
-            IQueryable<TouristRoute> collectionBeforePaging =
-                _context.TouristRoutes.ApplySort(filterParameters.OrderBy,
-                _propertyMappingService.GetPropertyMapping<TouristRouteDto, TouristRoute>());
+            IQueryable<TouristRoute> collectionBeforePaging =_context.TouristRoutes
+                .Include(t => t.TouristRoutePictures)
+                .ApplySort(filterParameters.OrderBy, _propertyMappingService.GetPropertyMapping<TouristRouteDto, TouristRoute>());
             // filter keyword
             if (!string.IsNullOrEmpty(filterParameters.Keyword))
             {
@@ -120,9 +120,38 @@ namespace FakeXiecheng.API.Services
 
         public IEnumerable<TouristRoutePicture> GetPicturesByTouristRouteId(Guid touristRouteId)
         {
+            if (touristRouteId == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(touristRouteId));
+            }
             return _context.TouristRoutePictures
                 .Where(p => p.TouristRouteId == touristRouteId)
                 .ToList();
+        }
+
+        public TouristRoutePicture GetPicturesByTouristRouteIdAndPictureId(Guid touristRouteId, int pictureId)
+        {
+            if (touristRouteId == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(touristRouteId));
+            }
+            return _context.TouristRoutePictures
+                .Where(p => p.TouristRouteId == touristRouteId && p.Id == pictureId)
+                .SingleOrDefault();
+        }
+
+        public void AddTouristRoutePicture(Guid touristRouteId, TouristRoutePicture picture)
+        {
+            if (touristRouteId == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(touristRouteId));
+            }
+            if (picture == null)
+            {
+                throw new ArgumentNullException(nameof(picture));
+            }
+            picture.TouristRouteId = touristRouteId;
+            _context.TouristRoutePictures.Add(picture);
         }
 
         public bool Save()
