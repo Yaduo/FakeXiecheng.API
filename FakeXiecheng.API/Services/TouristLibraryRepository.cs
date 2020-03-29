@@ -29,11 +29,13 @@ namespace FakeXiecheng.API.Services
         public IEnumerable<TouristRoute> GetTouristRoutes(TouristRouteFilterParameters filterParameters)
         {
             IQueryable<TouristRoute> result = _context.TouristRoutes.Include(t => t.TouristRoutePictures);
-            if (filterParameters.Keyword != null && !filterParameters.Keyword.Equals(""))
+            // filter keyword
+            if (!string.IsNullOrEmpty(filterParameters.Keyword))
             {
                 result = result.Where(c => c.Title.Contains(filterParameters.Keyword.Trim()));
             }
-            if(filterParameters.RatingValue != 0)
+            // filter rating
+            if (filterParameters.RatingValue != 0)
             {
                 //switch (filterParameters.RatingOperator)
                 //{
@@ -55,6 +57,17 @@ namespace FakeXiecheng.API.Services
                     _ => result.Where(c => c.Rating >= filterParameters.RatingValue),
                 };
             }
+
+            // pagination
+            var count = result.Count();
+            var skip = (filterParameters.PageNumber - 1) * filterParameters.PageSize;
+            result = result.Skip(skip);
+            var display = Math.Min(count - skip, filterParameters.PageSize);
+            if (display > 0)
+            {
+                result = result.Take(display);
+            }
+
             return result.ToList();
         }
 

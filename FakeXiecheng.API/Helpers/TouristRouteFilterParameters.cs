@@ -12,18 +12,47 @@ namespace FakeXiecheng.API.Helpers
 
     public class TouristRouteFilterParameters
     {
-        //private RatingFilter _rating = RatingFilter.largerThen;
+        /**
+         * pagination
+         */
+        const int maxPageSize = 20;
+        public int _pageNumber = 1;
+        public int PageNumber {
+            get { return _pageNumber; }
+            set {
+                if( value >= 1)
+                {
+                    _pageNumber = value;
+                }
+            }
+        }
+        private int _pageSize = 10;
+        public int PageSize
+        {
+            get
+            {
+                return _pageSize;
+            }
+            set
+            {
+                if (value >= 1)
+                {
+                    _pageSize = (value > maxPageSize) ? maxPageSize : value;
+                }
+            }
+        }
+
         public string Keyword { get; set; }
 
+        /**
+         * Filter: rating
+         * 接受 url rating 参数
+         * 配置 ratingVlaue 和 ratingOperator
+         */
         private OperatorType _ratingOperator;
         public OperatorType RatingOperator { get { return _ratingOperator; } }
         private int _ratingVlaue;
         public int RatingValue { get { return _ratingVlaue; } }
-
-        /**
-         * 接受 url rating 参数
-         * 配置 ratingVlaue 和 ratingOperator
-         */
         public string Rating
         {
             get { return ""; }
