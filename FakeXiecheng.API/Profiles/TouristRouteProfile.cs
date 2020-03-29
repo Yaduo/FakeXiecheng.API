@@ -14,15 +14,7 @@ namespace FakeXiecheng.API.Profiles
             CreateMap<TouristRoute, TouristRouteDto>()
                 .ForMember(
                     dest => dest.Price,
-                    opt => opt.MapFrom(src => src.OriginalPrice * (decimal)(src.DiscountPercent ?? 1)))
-                .ForMember(
-                    dest => dest.Pictures,
-                    // TODO: 应该用automapper来映射
-                    opt => opt.MapFrom(src => src.TouristRoutePictures.Select(p => new TouristRoutePictureDto() {
-                        Id = p.Id,
-                        Url = p.Url
-                    })))
-                ;
+                    opt => opt.MapFrom(src => src.OriginalPrice * (decimal)(src.DiscountPercent ?? 1)));
 
             CreateMap<TouristRouteForCreationDto, TouristRoute>()
                 .ForMember(

@@ -7,7 +7,7 @@ namespace FakeXiecheng.API.Dtos
     {
         public TouristRouteDto()
         {
-            Pictures = new List<TouristRoutePictureDto>();
+            TouristRoutePictures = new List<TouristRoutePictureDto>();
         }
         public Guid Id { get; set; }
         public string Title { get; set; }
@@ -21,6 +21,6 @@ namespace FakeXiecheng.API.Dtos
         public string Features { get; set; }
         public string Fees { get; set; }
         public string Notes { get; set; }
-        public IList<TouristRoutePictureDto> Pictures { get; set; }
+        public IList<TouristRoutePictureDto> TouristRoutePictures { get; set; }
     }
 }

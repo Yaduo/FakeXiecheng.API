@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+
 namespace FakeXiecheng.API.Dtos
 {
     public class TouristRouteForCreationDto
@@ -13,5 +15,7 @@ namespace FakeXiecheng.API.Dtos
         public string Features { get; set; }
         public string Fees { get; set; }
         public string Notes { get; set; }
+        public ICollection<TouristRoutePictureForCreationDto> TouristRoutePictures { get; set; }
+            = new List<TouristRoutePictureForCreationDto>();
     }
 }
