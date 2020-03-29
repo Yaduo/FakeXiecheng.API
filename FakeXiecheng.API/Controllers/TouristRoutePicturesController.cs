@@ -29,7 +29,8 @@ namespace FakeXiecheng.API.Controllers
         }
 
         // GET: /<controller>/
-        public IActionResult GetPictures(Guid touristRouteId)
+        [HttpGet(Name = "GetPictureListForTouristRoute")]
+        public IActionResult GetPictureListForTouristRoute(Guid touristRouteId)
         {
             if (!_touristRouteRepository.TouristRouteExists(touristRouteId))
             {
@@ -78,6 +79,25 @@ namespace FakeXiecheng.API.Controllers
                     new { touristRouteId, pictureId = pictureToReturn.Id },
                     pictureToReturn
                 );
+        }
+
+        [HttpPost("collection")]
+        public ActionResult CreatePictureListForAuthor(Guid touristRouteId, IEnumerable<TouristRoutePictureForCreationDto> pictureList)
+        {
+            if (!_touristRouteRepository.TouristRouteExists(touristRouteId))
+            {
+                return NotFound("no tourist route found");
+            }
+
+            var pictureListModel = _mapper.Map<IEnumerable<TouristRoutePicture>>(pictureList);
+            foreach (var picture in pictureListModel) {
+                _touristRouteRepository.AddTouristRoutePicture(touristRouteId, picture);
+            }
+            _touristRouteRepository.Save();
+            var pictureListToReturn = _mapper.Map<IEnumerable<TouristRoutePictureDto>>(pictureListModel);
+            return CreatedAtRoute("GetPictureListForTouristRoute",
+             new { touristRouteId },
+             pictureListToReturn);
         }
     }
 }
