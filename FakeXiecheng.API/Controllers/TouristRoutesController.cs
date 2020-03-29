@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using FakeXiecheng.API.Dtos;
+using FakeXiecheng.API.Helpers;
 using FakeXiecheng.API.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,9 +30,9 @@ namespace FakeXiecheng.API.Controllers
 
         [HttpGet]
         [HttpHead]
-        public IActionResult GetTouristRoutes([FromQuery] string keyword)
+        public IActionResult GetTouristRoutes([FromQuery] TouristRouteFilterParameters parameters)
         {
-            var touristRoutesFromRepo = _touristRouteRepository.GetTouristRoutes(keyword);
+            var touristRoutesFromRepo = _touristRouteRepository.GetTouristRoutes(parameters);
             // use for loop 
             //var touristRoutes = new List<TouristRouteDto>();
             //foreach(var touristRoute in touristRoutesFromRepo)
@@ -85,7 +86,10 @@ namespace FakeXiecheng.API.Controllers
 
             // using auto mapper
             var touristRoutes = _mapper.Map<IEnumerable<TouristRouteDto>>(touristRoutesFromRepo);
-
+            if(touristRoutes.Count() <= 0)
+            {
+                return NotFound("no tourist routes found");
+            }
             return Ok(touristRoutes);
         }
 

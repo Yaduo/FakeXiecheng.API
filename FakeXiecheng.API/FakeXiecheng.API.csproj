@@ -21,5 +21,6 @@
     <Folder Include="Services\" />
     <Folder Include="Dtos\" />
     <Folder Include="Profiles\" />
+    <Folder Include="Helpers\" />
   </ItemGroup>
 </Project>

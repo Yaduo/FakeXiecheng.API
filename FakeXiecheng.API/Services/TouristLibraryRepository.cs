@@ -1,4 +1,5 @@
 ﻿using FakeXiecheng.API.DbContexts;
+using FakeXiecheng.API.Helpers;
 using FakeXiecheng.API.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -25,13 +26,34 @@ namespace FakeXiecheng.API.Services
             return _context.TouristRoutes.Any(t => t.Id == touristRouteId);
         }
 
-        public IEnumerable<TouristRoute> GetTouristRoutes(string keyword)
+        public IEnumerable<TouristRoute> GetTouristRoutes(TouristRouteFilterParameters filterParameters)
         {
             IQueryable<TouristRoute> result = _context.TouristRoutes.Include(t => t.TouristRoutePictures);
-            if (keyword != null && keyword != "")
+            if (filterParameters.Keyword != null && !filterParameters.Keyword.Equals(""))
             {
-                keyword = keyword.Trim();
-                result = result.Where(c => c.Title.Contains(keyword));
+                result = result.Where(c => c.Title.Contains(filterParameters.Keyword.Trim()));
+            }
+            if(filterParameters.RatingValue != 0)
+            {
+                //switch (filterParameters.RatingOperator)
+                //{
+                //    case OperatorType.equal:
+                //        result = result.Where(c => c.Rating == filterParameters.RatingValue);
+                //        break;
+                //    case OperatorType.lessThan:
+                //        result = result.Where(c => c.Rating <= filterParameters.RatingValue);
+                //        break;
+                //    case OperatorType.largerThan:
+                //    default:
+                //        result = result.Where(c => c.Rating >= filterParameters.RatingValue);
+                //        break;
+                //}
+                result = filterParameters.RatingOperator switch
+                {
+                    OperatorType.equal => result.Where(c => c.Rating == filterParameters.RatingValue),
+                    OperatorType.lessThan => result.Where(c => c.Rating <= filterParameters.RatingValue),
+                    _ => result.Where(c => c.Rating >= filterParameters.RatingValue),
+                };
             }
             return result.ToList();
         }
