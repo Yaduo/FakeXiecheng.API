@@ -53,9 +53,10 @@ namespace FakeXiecheng.API.Helpers
         public OperatorType RatingOperator { get { return _ratingOperator; } }
         private int _ratingVlaue;
         public int RatingValue { get { return _ratingVlaue; } }
+        private string _rating; 
         public string Rating
         {
-            get { return ""; }
+            get { return _rating; }
             set
             {
                 Regex regex = new Regex(@"([A-Za-z0-9\-]+)(\d+)");
@@ -83,8 +84,8 @@ namespace FakeXiecheng.API.Helpers
                     {
                         // 什么都不用做
                     }
-                    
                 }
+                _rating = value;
             }
         }
     }

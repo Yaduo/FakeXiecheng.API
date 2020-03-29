@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
 using FakeXiecheng.API.Dtos;
 using FakeXiecheng.API.Helpers;
 using FakeXiecheng.API.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace FakeXiecheng.API.Controllers
 {
@@ -16,19 +17,54 @@ namespace FakeXiecheng.API.Controllers
     {
         private ITouristRouteRepository _touristRouteRepository;
         private IMapper _mapper;
+        private IUrlHelper _urlHelper;
 
         public TouristRoutesController(
             ITouristRouteRepository touristRouteRepository,
-            IMapper mapper
+            IMapper mapper,
+            IUrlHelperFactory urlHelperFactory,
+            IActionContextAccessor actionContextAccessor
         )
         {
             _touristRouteRepository = touristRouteRepository ??
                 throw new ArgumentNullException(nameof(touristRouteRepository));
             _mapper = mapper ??
                 throw new ArgumentNullException(nameof(mapper));
+            _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
         }
 
-        [HttpGet]
+        private string CreateAuthorsResourceUri(
+            TouristRouteFilterParameters parameters,
+            ResourceUriType type
+        )
+        {
+            return type switch
+            {
+                ResourceUriType.PreviousPage => _urlHelper.Link("GetTouristRoutes",
+                    new {
+                        keyword = parameters.Keyword,
+                        rating = parameters.Rating,
+                        pageNumber = parameters.PageNumber - 1,
+                        pageSize = parameters.PageSize
+                    }),
+                ResourceUriType.NextPage => _urlHelper.Link("GetTouristRoutes",
+                    new {
+                        keyword = parameters.Keyword,
+                        rating = parameters.Rating,
+                        pageNumber = parameters.PageNumber + 1,
+                        pageSize = parameters.PageSize
+                    }),
+                _ => _urlHelper.Link("GetTouristRoutes",
+                    new {
+                        keyword = parameters.Keyword,
+                        rating = parameters.Rating,
+                        pageNumber = parameters.PageNumber,
+                        pageSize = parameters.PageSize
+                    })
+            };
+        }
+
+        [HttpGet(Name = "GetTouristRoutes")]
         [HttpHead]
         public IActionResult GetTouristRoutes([FromQuery] TouristRouteFilterParameters parameters)
         {
@@ -90,6 +126,29 @@ namespace FakeXiecheng.API.Controllers
             {
                 return NotFound("no tourist routes found");
             }
+
+            // create Header
+            var previousPageLink = touristRoutesFromRepo.HasPrevious ?
+                    CreateAuthorsResourceUri(parameters,
+                    ResourceUriType.PreviousPage) : null;
+
+            var nextPageLink = touristRoutesFromRepo.HasNext ?
+                CreateAuthorsResourceUri(parameters,
+                ResourceUriType.NextPage) : null;
+
+            var paginationMetadata = new
+            {
+                previousPageLink,
+                nextPageLink,
+                totalCount = touristRoutesFromRepo.TotalCount,
+                pageSize = touristRoutesFromRepo.PageSize,
+                currentPage = touristRoutesFromRepo.CurrentPage,
+                totalPages = touristRoutesFromRepo.TotalPages
+            };
+
+            Response.Headers.Add("X-Pagination",
+                Newtonsoft.Json.JsonConvert.SerializeObject(paginationMetadata));
+
             return Ok(touristRoutes);
         }
 

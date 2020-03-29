@@ -26,13 +26,13 @@ namespace FakeXiecheng.API.Services
             return _context.TouristRoutes.Any(t => t.Id == touristRouteId);
         }
 
-        public IEnumerable<TouristRoute> GetTouristRoutes(TouristRouteFilterParameters filterParameters)
+        public PaginationList<TouristRoute> GetTouristRoutes(TouristRouteFilterParameters filterParameters)
         {
-            IQueryable<TouristRoute> result = _context.TouristRoutes.Include(t => t.TouristRoutePictures);
+            IQueryable<TouristRoute> collectionBeforePaging = _context.TouristRoutes.Include(t => t.TouristRoutePictures);
             // filter keyword
             if (!string.IsNullOrEmpty(filterParameters.Keyword))
             {
-                result = result.Where(c => c.Title.Contains(filterParameters.Keyword.Trim()));
+                collectionBeforePaging = collectionBeforePaging.Where(c => c.Title.Contains(filterParameters.Keyword.Trim()));
             }
             // filter rating
             if (filterParameters.RatingValue != 0)
@@ -50,25 +50,29 @@ namespace FakeXiecheng.API.Services
                 //        result = result.Where(c => c.Rating >= filterParameters.RatingValue);
                 //        break;
                 //}
-                result = filterParameters.RatingOperator switch
+                collectionBeforePaging = filterParameters.RatingOperator switch
                 {
-                    OperatorType.equal => result.Where(c => c.Rating == filterParameters.RatingValue),
-                    OperatorType.lessThan => result.Where(c => c.Rating <= filterParameters.RatingValue),
-                    _ => result.Where(c => c.Rating >= filterParameters.RatingValue),
+                    OperatorType.equal => collectionBeforePaging.Where(c => c.Rating == filterParameters.RatingValue),
+                    OperatorType.lessThan => collectionBeforePaging.Where(c => c.Rating <= filterParameters.RatingValue),
+                    _ => collectionBeforePaging.Where(c => c.Rating >= filterParameters.RatingValue),
                 };
             }
 
             // pagination
-            var count = result.Count();
-            var skip = (filterParameters.PageNumber - 1) * filterParameters.PageSize;
-            result = result.Skip(skip);
-            var display = Math.Min(count - skip, filterParameters.PageSize);
-            if (display > 0)
-            {
-                result = result.Take(display);
-            }
-
-            return result.ToList();
+            //var count = result.Count();
+            //var skip = (filterParameters.PageNumber - 1) * filterParameters.PageSize;
+            //result = result.Skip(skip);
+            //var display = Math.Min(count - skip, filterParameters.PageSize);
+            //if (display > 0)
+            //{
+            //    result = result.Take(display);
+            //}
+            //return result.ToList();
+            return PaginationList<TouristRoute>.Create(
+                    collectionBeforePaging,
+                    filterParameters.PageNumber,
+                    filterParameters.PageSize
+                );
         }
 
         public TouristRoute GetTouristRoute(Guid routeId)
