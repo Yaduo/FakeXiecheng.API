@@ -215,19 +215,9 @@ namespace FakeXiecheng.API.Controllers
             }
 
             var touristRouteFromRepo = _touristRouteRepository.GetTouristRouteById(touristRouteId);
-
             if (touristRouteFromRepo == null)
             {
-                var touristRouteToAdd = _mapper.Map<TouristRoute>(touristRouteDto);
-                touristRouteToAdd.Id = touristRouteId;
-                _touristRouteRepository.AddTouristRoute(touristRouteToAdd);
-                _touristRouteRepository.Save();
-                var touristRouteToReturn = _mapper.Map<TouristRouteDto>(touristRouteToAdd);
-                return CreatedAtRoute(
-                    "GetTouristRouteById",
-                    new { routeId = touristRouteToReturn.Id },
-                    touristRouteToReturn
-                );
+                return NotFound();
             }
 
             // map the entity to a CourseForUpdateDto
