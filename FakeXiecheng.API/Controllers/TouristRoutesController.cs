@@ -242,14 +242,28 @@ namespace FakeXiecheng.API.Controllers
         public IActionResult PartiallyUpdateTouristRouteById(Guid touristRouteId,
             JsonPatchDocument<TouristRouteForUpdateDto> patchDocument)
         {
-            if (!_touristRouteRepository.TouristRouteExists(touristRouteId))
-            {
-                return NotFound();
-            }
             var touristRouteFromRepo = _touristRouteRepository.GetTouristRouteById(touristRouteId);
             if (touristRouteFromRepo == null)
             {
-                return NotFound();
+                var touristRouteDto = new TouristRouteForUpdateDto();
+                patchDocument.ApplyTo(touristRouteDto, ModelState);
+                if (!TryValidateModel(touristRouteDto))
+                {
+                    return ValidationProblem(ModelState);
+                }
+
+                var touristRouteToAdd = _mapper.Map<TouristRoute>(touristRouteDto);
+                touristRouteToAdd.Id = touristRouteId;
+
+                _touristRouteRepository.AddTouristRoute(touristRouteToAdd);
+                _touristRouteRepository.Save();
+
+                var touristRouteToReturn = _mapper.Map<TouristRouteDto>(touristRouteToAdd);
+                return CreatedAtRoute(
+                    "GetTouristRouteById",
+                    new { routeId = touristRouteToReturn.Id },
+                    touristRouteToReturn
+                );
             }
 
             // apply patch
