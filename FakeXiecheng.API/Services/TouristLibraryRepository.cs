@@ -96,7 +96,7 @@ namespace FakeXiecheng.API.Services
             return _context.TouristRoutes.Where(t => touristRouteIds.Contains(t.Id)).ToList();
         }
 
-        public TouristRoute GetTouristRoute(Guid routeId)
+        public TouristRoute GetTouristRouteById(Guid routeId)
         {
             if (routeId == Guid.Empty)
             {

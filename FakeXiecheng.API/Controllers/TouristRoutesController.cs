@@ -156,7 +156,7 @@ namespace FakeXiecheng.API.Controllers
         [HttpGet("{routeId}", Name = "GetTouristRouteById")]
         public IActionResult GetTouristRouteById(Guid routeId)
         {
-            var touristRouteFromRepo = _touristRouteRepository.GetTouristRoute(routeId);
+            var touristRouteFromRepo = _touristRouteRepository.GetTouristRouteById(routeId);
 
             if (touristRouteFromRepo == null)
             {
@@ -204,6 +204,39 @@ namespace FakeXiecheng.API.Controllers
         {
             Response.Headers.Add("Allow", "GET, OPTION, POST");
             return Ok();
+        }
+
+        [HttpPut("{touristRouteId}")]
+        public IActionResult UpdateCourseForAuthor(Guid touristRouteId, TouristRouteForUpdateDto touristRouteDto)
+        {
+            if (!_touristRouteRepository.TouristRouteExists(touristRouteId))
+            {
+                return NotFound();
+            }
+
+            var touristRouteFromRepo = _touristRouteRepository.GetTouristRouteById(touristRouteId);
+
+            if (touristRouteFromRepo == null)
+            {
+                var touristRouteToAdd = _mapper.Map<TouristRoute>(touristRouteDto);
+                touristRouteToAdd.Id = touristRouteId;
+                _touristRouteRepository.AddTouristRoute(touristRouteToAdd);
+                _touristRouteRepository.Save();
+                var touristRouteToReturn = _mapper.Map<TouristRouteDto>(touristRouteToAdd);
+                return CreatedAtRoute(
+                    "GetTouristRouteById",
+                    new { routeId = touristRouteToReturn.Id },
+                    touristRouteToReturn
+                );
+            }
+
+            // map the entity to a CourseForUpdateDto
+            // apply the updated field values to that dto
+            // map the CourseForUpdateDto back to an entity
+            _mapper.Map(touristRouteDto, touristRouteFromRepo);
+            _touristRouteRepository.UpdateTouristRoute(touristRouteFromRepo);
+            _touristRouteRepository.Save();
+            return NoContent();
         }
     }
 }

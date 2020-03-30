@@ -10,7 +10,7 @@ namespace FakeXiecheng.API.Services
         bool TouristRouteExists(Guid touristRouteId);
         PaginationList<TouristRoute> GetTouristRoutes(TouristRouteFilterParameters filterParameters);
         IEnumerable<TouristRoute> GetTouristRoutesByIdList(IEnumerable<Guid> touristRouteIds);
-        TouristRoute GetTouristRoute(Guid routeId);
+        TouristRoute GetTouristRouteById(Guid routeId);
         void AddTouristRoute(TouristRoute route);
         void UpdateTouristRoute(TouristRoute route);
         void DeleteCTouristRoute(TouristRoute route);

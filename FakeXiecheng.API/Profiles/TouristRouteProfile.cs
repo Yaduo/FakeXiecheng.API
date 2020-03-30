@@ -20,6 +20,8 @@ namespace FakeXiecheng.API.Profiles
                 .ForMember(
                     dest => dest.Id,
                     opt => opt.MapFrom(src => Guid.NewGuid()));
+
+            CreateMap<TouristRouteForUpdateDto, TouristRoute>();
         }
     }
 }
