@@ -23,5 +23,6 @@
     <Folder Include="Dtos\" />
     <Folder Include="Profiles\" />
     <Folder Include="Helpers\" />
+    <Folder Include="ValidationAttributes\" />
   </ItemGroup>
 </Project>
