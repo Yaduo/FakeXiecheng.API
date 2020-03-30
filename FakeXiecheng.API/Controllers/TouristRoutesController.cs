@@ -209,11 +209,6 @@ namespace FakeXiecheng.API.Controllers
         [HttpPut("{touristRouteId}")]
         public IActionResult UpdateCourseForAuthor(Guid touristRouteId, TouristRouteForUpdateDto touristRouteDto)
         {
-            if (!_touristRouteRepository.TouristRouteExists(touristRouteId))
-            {
-                return NotFound();
-            }
-
             var touristRouteFromRepo = _touristRouteRepository.GetTouristRouteById(touristRouteId);
             if (touristRouteFromRepo == null)
             {
