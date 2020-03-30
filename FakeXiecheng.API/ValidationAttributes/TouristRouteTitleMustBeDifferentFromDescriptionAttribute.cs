@@ -14,7 +14,7 @@ namespace FakeXiecheng.API.ValidationAttributes
             if (touristRoute.Title == touristRoute.Description)
             {
                 return new ValidationResult(
-                    "the provide description must be different from title",
+                    ErrorMessage,
                     new[] { nameof(TouristRouteForCreationDto) }
                 );
             }
