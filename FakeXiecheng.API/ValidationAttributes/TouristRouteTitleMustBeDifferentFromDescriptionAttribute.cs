@@ -9,13 +9,13 @@ namespace FakeXiecheng.API.ValidationAttributes
         protected override ValidationResult IsValid(object value,
             ValidationContext validationContext)
         {
-            var touristRoute = (TouristRouteForCreationDto)validationContext.ObjectInstance;
+            var touristRoute = (TouristRouteForManipulationDto)validationContext.ObjectInstance;
 
             if (touristRoute.Title == touristRoute.Description)
             {
                 return new ValidationResult(
                     ErrorMessage,
-                    new[] { nameof(TouristRouteForCreationDto) }
+                    new[] { nameof(TouristRouteForManipulationDto) }
                 );
             }
 
