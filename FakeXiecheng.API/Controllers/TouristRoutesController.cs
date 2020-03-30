@@ -292,5 +292,22 @@ namespace FakeXiecheng.API.Controllers
                 .GetRequiredService<IOptions<ApiBehaviorOptions>>();
             return (ActionResult)options.Value.InvalidModelStateResponseFactory(ControllerContext);
         }
+
+        [HttpDelete("{touristRouteId}")]
+        public ActionResult DeleteCourseForAuthor(Guid touristRouteId)
+        {
+            var touristRouteFromRepo = _touristRouteRepository.GetTouristRouteById(touristRouteId);
+            if (touristRouteFromRepo == null)
+            {
+                return NotFound();
+
+            }
+
+            _touristRouteRepository.DeleteTouristRoute(touristRouteFromRepo);
+            _touristRouteRepository.Save();
+
+            return NoContent();
+        }
+
     }
 }

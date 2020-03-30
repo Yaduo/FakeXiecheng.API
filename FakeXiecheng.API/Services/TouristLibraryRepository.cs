@@ -122,7 +122,7 @@ namespace FakeXiecheng.API.Services
             // no code in this implementation
         }
 
-        public void DeleteCTouristRoute(TouristRoute route)
+        public void DeleteTouristRoute(TouristRoute route)
         {
             _context.TouristRoutes.Remove(route);
         }

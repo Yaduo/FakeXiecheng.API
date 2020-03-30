@@ -13,7 +13,7 @@ namespace FakeXiecheng.API.Services
         TouristRoute GetTouristRouteById(Guid routeId);
         void AddTouristRoute(TouristRoute route);
         void UpdateTouristRoute(TouristRoute route);
-        void DeleteCTouristRoute(TouristRoute route);
+        void DeleteTouristRoute(TouristRoute route);
         IEnumerable<TouristRoutePicture> GetPicturesByTouristRouteId(Guid touristRouteId);
         TouristRoutePicture GetPicturesByTouristRouteIdAndPictureId(Guid touristRouteId, int pictureId);
         void AddTouristRoutePicture(Guid touristRouteId, TouristRoutePicture picture);
