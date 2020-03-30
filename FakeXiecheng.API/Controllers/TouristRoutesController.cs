@@ -186,7 +186,7 @@ namespace FakeXiecheng.API.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateAuthor(TouristRouteForCreationDto touristRouteDto)
+        public IActionResult CreateTouristRoute(TouristRouteForCreationDto touristRouteDto)
         {
             var touristRouteModel = _mapper.Map<TouristRoute>(touristRouteDto);
             _touristRouteRepository.AddTouristRoute(touristRouteModel);
@@ -197,6 +197,13 @@ namespace FakeXiecheng.API.Controllers
                     new { routeId = touristRouteToReturn.Id },
                     touristRouteToReturn
                 );
+        }
+
+        [HttpOptions]
+        public IActionResult GetTouristRouteOptions()
+        {
+            Response.Headers.Add("Allow", "GET, OPTION, POST");
+            return Ok();
         }
     }
 }
