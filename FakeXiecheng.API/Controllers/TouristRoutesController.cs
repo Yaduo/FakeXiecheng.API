@@ -6,6 +6,7 @@ using FakeXiecheng.API.Dtos;
 using FakeXiecheng.API.Helpers;
 using FakeXiecheng.API.Models;
 using FakeXiecheng.API.Services;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
@@ -207,7 +208,7 @@ namespace FakeXiecheng.API.Controllers
         }
 
         [HttpPut("{touristRouteId}")]
-        public IActionResult UpdateCourseForAuthor(Guid touristRouteId, TouristRouteForUpdateDto touristRouteDto)
+        public IActionResult UpdateTouristRouteById(Guid touristRouteId, TouristRouteForUpdateDto touristRouteDto)
         {
             var touristRouteFromRepo = _touristRouteRepository.GetTouristRouteById(touristRouteId);
             if (touristRouteFromRepo == null)
@@ -232,5 +233,35 @@ namespace FakeXiecheng.API.Controllers
             _touristRouteRepository.Save();
             return NoContent();
         }
+
+
+        [HttpPatch("{touristRouteId}")]
+        public IActionResult PartiallyUpdateTouristRouteById(Guid touristRouteId,
+            JsonPatchDocument<TouristRouteForUpdateDto> patchDocument)
+        {
+            if (!_touristRouteRepository.TouristRouteExists(touristRouteId))
+            {
+                return NotFound();
+            }
+            var touristRouteFromRepo = _touristRouteRepository.GetTouristRouteById(touristRouteId);
+            if (touristRouteFromRepo == null)
+            {
+                return NotFound();
+            }
+
+            // apply patch
+            var touristRouteToPatch = _mapper.Map<TouristRouteForUpdateDto>(touristRouteFromRepo);
+            patchDocument.ApplyTo(touristRouteToPatch);
+
+            // update model by patch
+            _mapper.Map(touristRouteToPatch, touristRouteFromRepo);
+
+            // update database
+            _touristRouteRepository.UpdateTouristRoute(touristRouteFromRepo);
+            _touristRouteRepository.Save();
+
+            return NoContent();
+        }
+
     }
 }
