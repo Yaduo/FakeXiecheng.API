@@ -251,7 +251,12 @@ namespace FakeXiecheng.API.Controllers
 
             // apply patch
             var touristRouteToPatch = _mapper.Map<TouristRouteForUpdateDto>(touristRouteFromRepo);
-            patchDocument.ApplyTo(touristRouteToPatch);
+            patchDocument.ApplyTo(touristRouteToPatch, ModelState);
+
+            if(!TryValidateModel(touristRouteToPatch))
+            {
+                return ValidationProblem(ModelState);
+            }
 
             // update model by patch
             _mapper.Map(touristRouteToPatch, touristRouteFromRepo);
