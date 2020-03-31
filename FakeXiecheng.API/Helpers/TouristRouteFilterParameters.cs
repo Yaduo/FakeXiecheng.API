@@ -96,5 +96,7 @@ namespace FakeXiecheng.API.Helpers
          * 排序
          */
         public string OrderBy { get; set; } = "Title";
+
+        public string Fields { get; set; }
     }
 }

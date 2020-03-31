@@ -50,21 +50,27 @@ namespace FakeXiecheng.API.Controllers
                         keyword = parameters.Keyword,
                         rating = parameters.Rating,
                         pageNumber = parameters.PageNumber - 1,
-                        pageSize = parameters.PageSize
+                        pageSize = parameters.PageSize,
+                        orderBy = parameters.OrderBy,
+                        fields = parameters.Fields,
                     }),
                 ResourceUriType.NextPage => _urlHelper.Link("GetTouristRoutes",
                     new {
                         keyword = parameters.Keyword,
                         rating = parameters.Rating,
                         pageNumber = parameters.PageNumber + 1,
-                        pageSize = parameters.PageSize
+                        pageSize = parameters.PageSize,
+                        orderBy = parameters.OrderBy,
+                        fields = parameters.Fields,
                     }),
                 _ => _urlHelper.Link("GetTouristRoutes",
                     new {
                         keyword = parameters.Keyword,
                         rating = parameters.Rating,
                         pageNumber = parameters.PageNumber,
-                        pageSize = parameters.PageSize
+                        pageSize = parameters.PageSize,
+                        orderBy = parameters.OrderBy,
+                        fields = parameters.Fields,
                     })
             };
         }
@@ -154,7 +160,7 @@ namespace FakeXiecheng.API.Controllers
             Response.Headers.Add("X-Pagination",
                 Newtonsoft.Json.JsonConvert.SerializeObject(paginationMetadata));
 
-            return Ok(touristRoutes);
+            return Ok(touristRoutes.ShapeData(parameters.Fields));
         }
 
         [HttpGet("{routeId}", Name = "GetTouristRouteById")]
