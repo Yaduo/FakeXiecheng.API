@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
+using FakeXiecheng.API.ActionConstraints;
 using FakeXiecheng.API.Dtos;
 using FakeXiecheng.API.Helpers;
 using FakeXiecheng.API.Models;
@@ -302,7 +303,43 @@ namespace FakeXiecheng.API.Controllers
             return Ok(_mapper.Map<IEnumerable<TouristRouteDto>>(touristRoute));
         }
 
+        [HttpPost(Name = "CreateTouristRouteWithTripAttribute")]
+        [RequestHeaderMatchesMediaType(
+            "Content-Type",
+            "application/vnd.fakeXiecheng.createTouristRouteWithTripAttribute+json"
+        )]
+        [Consumes("application/vnd.fakeXiecheng.createTouristRouteWithTripAttribute+json")]
+        public IActionResult CreateTouristRouteWithTripAttribute(TouristRouteForCreationWithTripAttributeDto touristRouteDto)
+        {
+            var touristRouteModel = _mapper.Map<TouristRoute>(touristRouteDto);
+
+            _touristRouteRepository.AddTouristRoute(touristRouteModel);
+            _touristRouteRepository.Save();
+
+            var touristRouteToReturn = _mapper.Map<TouristRouteDto>(touristRouteModel);
+
+            var links = CreateLinksForTouristRoute(touristRouteToReturn.Id, null);
+
+            var linkedResourceToReturn =
+                _mapper.Map<TouristRouteDto>(touristRouteToReturn).ShapeData(null)
+                as IDictionary<string, object>;
+
+            linkedResourceToReturn.Add("links", links);
+
+            return CreatedAtRoute(
+                    "GetTouristRouteById",
+                    new { touristRouteId = linkedResourceToReturn["Id"] },
+                    linkedResourceToReturn
+                );
+        }
+
         [HttpPost(Name = "CreateTouristRoute")]
+        [RequestHeaderMatchesMediaType(
+            "Content-Type",
+            "application/json",
+            "application/vnd.fakeXiecheng.createTouristRoute+json"
+        )]
+        [Consumes("application/json", "application/vnd.fakeXiecheng.createTouristRoute+json")]
         public IActionResult CreateTouristRoute(TouristRouteForCreationDto touristRouteDto)
         {
             var touristRouteModel = _mapper.Map<TouristRoute>(touristRouteDto);

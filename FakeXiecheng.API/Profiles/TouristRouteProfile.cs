@@ -30,6 +30,8 @@ namespace FakeXiecheng.API.Profiles
                     dest => dest.Price,
                     opt => opt.MapFrom(src => src.OriginalPrice * (decimal)(src.DiscountPercent ?? 1)));
 
+            CreateMap<TouristRouteForCreationWithTripAttributeDto, TouristRoute>();
+
         }
     }
 }

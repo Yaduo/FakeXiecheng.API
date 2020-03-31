@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using FakeXiecheng.API.Models;
 
 namespace FakeXiecheng.API.Dtos
 {
@@ -22,5 +23,17 @@ namespace FakeXiecheng.API.Dtos
         public string Fees { get; set; }
         public string Notes { get; set; }
         public IList<TouristRoutePictureDto> TouristRoutePictures { get; set; }
+
+        public DateTime CreateTimeUTC { get; set; }
+
+        public DateTime? UpdateTimeUTC { get; set; }
+
+        public DateTime? DepartureTime { get; set; }
+
+        public TravelDays? TravelDays { get; set; }
+
+        public TripType? TripType { get; set; }
+
+        public DepartureCity? DepartureCity { get; set; }
     }
 }

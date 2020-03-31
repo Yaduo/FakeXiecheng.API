@@ -26,5 +26,6 @@
     <Folder Include="Profiles\" />
     <Folder Include="Helpers\" />
     <Folder Include="ValidationAttributes\" />
+    <Folder Include="ActionConstraints\" />
   </ItemGroup>
 </Project>
