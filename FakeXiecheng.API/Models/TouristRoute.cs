@@ -49,5 +49,14 @@ namespace FakeXiecheng.API.Models
         public DateTime CreateTimeUTC { get; set; } = DateTime.UtcNow;
 
         public DateTime? UpdateTimeUTC { get; set; }
-    } 
+
+        public DateTime? DepartureTime { get; set; }
+
+        public TravelDays? TravelDays { get; set; }
+
+        public TripType? TripType { get; set; }
+
+        public DepartureCity? DepartureCity { get; set; }
+
+    }
 }
