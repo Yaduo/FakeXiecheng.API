@@ -164,7 +164,7 @@ namespace FakeXiecheng.API.Controllers
         }
 
         [HttpGet("{routeId}", Name = "GetTouristRouteById")]
-        public IActionResult GetTouristRouteById(Guid routeId)
+        public IActionResult GetTouristRouteById(Guid routeId, string fields)
         {
             var touristRouteFromRepo = _touristRouteRepository.GetTouristRouteById(routeId);
 
@@ -173,7 +173,7 @@ namespace FakeXiecheng.API.Controllers
                 return NotFound();
             }
 
-            return Ok(_mapper.Map<TouristRouteDto>(touristRouteFromRepo));
+            return Ok(_mapper.Map<TouristRouteDto>(touristRouteFromRepo).ShapeData(fields));
         }
 
         [HttpGet("collection/({ids})", Name = "GetAuthorCollection")]
