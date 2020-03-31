@@ -20,15 +20,17 @@ namespace FakeXiecheng.API.Controllers
     [Route("api/[controller]")]
     public class TouristRoutesController : Controller //ControllerBase
     {
-        private ITouristRouteRepository _touristRouteRepository;
-        private IMapper _mapper;
-        private IUrlHelper _urlHelper;
+        private readonly ITouristRouteRepository _touristRouteRepository;
+        private readonly IMapper _mapper;
+        private readonly IUrlHelper _urlHelper;
+        private readonly IPropertyCheckerService _propertyCheckerService;
 
         public TouristRoutesController(
             ITouristRouteRepository touristRouteRepository,
             IMapper mapper,
             IUrlHelperFactory urlHelperFactory,
-            IActionContextAccessor actionContextAccessor
+            IActionContextAccessor actionContextAccessor,
+            IPropertyCheckerService propertyCheckerService
         )
         {
             _touristRouteRepository = touristRouteRepository ??
@@ -36,6 +38,8 @@ namespace FakeXiecheng.API.Controllers
             _mapper = mapper ??
                 throw new ArgumentNullException(nameof(mapper));
             _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
+            _propertyCheckerService = propertyCheckerService ??
+              throw new ArgumentNullException(nameof(propertyCheckerService));
         }
 
         private string CreateAuthorsResourceUri(
@@ -79,6 +83,11 @@ namespace FakeXiecheng.API.Controllers
         [HttpHead]
         public IActionResult GetTouristRoutes([FromQuery] TouristRouteFilterParameters parameters)
         {
+            if (!_propertyCheckerService.TypeHasProperties<TouristRouteDto>(parameters.Fields))
+            {
+                return BadRequest();
+            }
+
             var touristRoutesFromRepo = _touristRouteRepository.GetTouristRoutes(parameters);
             // use for loop 
             //var touristRoutes = new List<TouristRouteDto>();
@@ -166,6 +175,11 @@ namespace FakeXiecheng.API.Controllers
         [HttpGet("{routeId}", Name = "GetTouristRouteById")]
         public IActionResult GetTouristRouteById(Guid routeId, string fields)
         {
+            if (!_propertyCheckerService.TypeHasProperties<TouristRouteDto>(fields))
+            {
+                return BadRequest();
+            }
+
             var touristRouteFromRepo = _touristRouteRepository.GetTouristRouteById(routeId);
 
             if (touristRouteFromRepo == null)
