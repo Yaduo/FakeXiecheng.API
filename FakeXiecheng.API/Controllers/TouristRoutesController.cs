@@ -86,6 +86,7 @@ namespace FakeXiecheng.API.Controllers
 
         [HttpGet(Name = "GetTouristRoutes")]
         [HttpHead]
+        [ResponseCache(Duration = 120)]
         public IActionResult GetTouristRoutes([FromQuery] TouristRouteFilterParameters parameters)
         {
             if (!_propertyCheckerService.TypeHasProperties<TouristRouteDto>(parameters.Fields))
