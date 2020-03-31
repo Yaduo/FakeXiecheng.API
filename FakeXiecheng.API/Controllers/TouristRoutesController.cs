@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.Net.Http.Headers;
 
 namespace FakeXiecheng.API.Controllers
 {
@@ -199,8 +200,17 @@ namespace FakeXiecheng.API.Controllers
         }
 
         [HttpGet("{touristRouteId}", Name = "GetTouristRouteById")]
-        public IActionResult GetTouristRouteById(Guid touristRouteId, string fields)
+        public IActionResult GetTouristRouteById(
+            Guid touristRouteId,
+            string fields,
+            [FromHeader(Name = "Accept")] string mediaType
+        )
         {
+            if (!MediaTypeHeaderValue.TryParse(mediaType, out MediaTypeHeaderValue parsedMediaType))
+            {
+                return BadRequest();
+            }
+
             if (!_propertyCheckerService.TypeHasProperties<TouristRouteDto>(fields))
             {
                 return BadRequest();
@@ -212,15 +222,20 @@ namespace FakeXiecheng.API.Controllers
                 return NotFound();
             }
 
-            var links = CreateLinksForTouristRoute(touristRouteId, fields);
+            if(parsedMediaType.MediaType == "application/vnd.fakeXiecheng.hateoas+json")
+            {
+                var links = CreateLinksForTouristRoute(touristRouteId, fields);
 
-            var linkedResourceToReturn =
-                _mapper.Map<TouristRouteDto>(touristRouteFromRepo).ShapeData(fields)
-                as IDictionary<string, object>;
+                var linkedResourceToReturn =
+                    _mapper.Map<TouristRouteDto>(touristRouteFromRepo).ShapeData(fields)
+                    as IDictionary<string, object>;
 
-            linkedResourceToReturn.Add("links", links);
+                linkedResourceToReturn.Add("links", links);
 
-            return Ok(linkedResourceToReturn);
+                return Ok(linkedResourceToReturn);
+            }
+
+            return Ok(_mapper.Map<TouristRouteDto>(touristRouteFromRepo).ShapeData(fields));
         }
 
         [HttpGet("collection/({ids})", Name = "GetAuthorCollection")]

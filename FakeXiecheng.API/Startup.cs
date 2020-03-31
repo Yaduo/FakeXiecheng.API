@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using AutoMapper;
 using FakeXiecheng.API.DbContexts;
 using FakeXiecheng.API.Services;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -30,7 +32,6 @@ namespace FakeXiecheng.API
             services.AddControllers(setupAction =>
             {
                 setupAction.ReturnHttpNotAcceptable = true;
-
             })
             .AddNewtonsoftJson(setupAction =>
             {
@@ -56,6 +57,17 @@ namespace FakeXiecheng.API
                         ContentTypes = { "application/problem+json" }
                     };
                 };
+            });
+
+            services.Configure<MvcOptions>(config =>
+            {
+                var newtonsoftJsonOutputFormatter = config.OutputFormatters
+                      .OfType<NewtonsoftJsonOutputFormatter>()?.FirstOrDefault();
+
+                if (newtonsoftJsonOutputFormatter != null)
+                {
+                    newtonsoftJsonOutputFormatter.SupportedMediaTypes.Add("application/vnd.fakeXiecheng.hateoas+json");
+                }
             });
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
