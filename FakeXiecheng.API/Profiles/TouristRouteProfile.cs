@@ -22,7 +22,14 @@ namespace FakeXiecheng.API.Profiles
                     opt => opt.MapFrom(src => Guid.NewGuid()));
 
             CreateMap<TouristRouteForUpdateDto, TouristRoute>();
+
             CreateMap<TouristRoute, TouristRouteForUpdateDto>();
+
+            CreateMap<TouristRoute, SimpleTouristRouteDto>()
+                .ForMember(
+                    dest => dest.Price,
+                    opt => opt.MapFrom(src => src.OriginalPrice * (decimal)(src.DiscountPercent ?? 1)));
+
         }
     }
 }

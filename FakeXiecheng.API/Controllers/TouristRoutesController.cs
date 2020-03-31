@@ -199,6 +199,13 @@ namespace FakeXiecheng.API.Controllers
             return Ok(linkedCollectionResource);
         }
 
+        [Produces(
+            "application/json",
+            "application/xml",
+            "application/vnd.fakeXiecheng.hateoas+json",
+            "application/vnd.fakeXiecheng.simplify+json",
+            "application/vnd.fakeXiecheng.simplify.hateoas+json"
+        )]
         [HttpGet("{touristRouteId}", Name = "GetTouristRouteById")]
         public IActionResult GetTouristRouteById(
             Guid touristRouteId,
@@ -222,20 +229,58 @@ namespace FakeXiecheng.API.Controllers
                 return NotFound();
             }
 
-            if(parsedMediaType.MediaType == "application/vnd.fakeXiecheng.hateoas+json")
+            //if(parsedMediaType.MediaType == "application/vnd.fakeXiecheng.hateoas+json")
+            //{
+            //    var links = CreateLinksForTouristRoute(touristRouteId, fields);
+
+            //    var linkedResourceToReturn =
+            //        _mapper.Map<TouristRouteDto>(touristRouteFromRepo).ShapeData(fields)
+            //        as IDictionary<string, object>;
+
+            //    linkedResourceToReturn.Add("links", links);
+
+            //    return Ok(linkedResourceToReturn);
+            //}
+
+            //return Ok(_mapper.Map<TouristRouteDto>(touristRouteFromRepo).ShapeData(fields));
+
+            bool includeLinks = parsedMediaType.SubTypeWithoutSuffix
+               .EndsWith("hateoas", StringComparison.InvariantCultureIgnoreCase);
+
+            IEnumerable<LinkDto> links = new List<LinkDto>();
+            if (includeLinks)
             {
-                var links = CreateLinksForTouristRoute(touristRouteId, fields);
-
-                var linkedResourceToReturn =
-                    _mapper.Map<TouristRouteDto>(touristRouteFromRepo).ShapeData(fields)
-                    as IDictionary<string, object>;
-
-                linkedResourceToReturn.Add("links", links);
-
-                return Ok(linkedResourceToReturn);
+                links = CreateLinksForTouristRoute(touristRouteId, fields);
             }
 
-            return Ok(_mapper.Map<TouristRouteDto>(touristRouteFromRepo).ShapeData(fields));
+            var primaryMediaType = includeLinks
+                ? parsedMediaType.SubTypeWithoutSuffix.Substring(0, parsedMediaType.SubTypeWithoutSuffix.Length - 8)
+                : parsedMediaType.SubTypeWithoutSuffix;
+
+            // simplify TouristRouteDto
+            if (primaryMediaType == "vnd.fakeXiecheng.simplify")
+            {
+                var simplifyResults = _mapper.Map<SimpleTouristRouteDto>(touristRouteFromRepo)
+                    .ShapeData(fields) as IDictionary<string, object>;
+
+                if (includeLinks)
+                {
+                    simplifyResults.Add("links", links);
+                }
+
+                return Ok(simplifyResults);
+            }
+
+            // normal TouristRouteDto
+            var results = _mapper.Map<TouristRouteDto>(touristRouteFromRepo)
+                .ShapeData(fields) as IDictionary<string, object>;
+
+            if (includeLinks)
+            {
+                results.Add("links", links);
+            }
+
+            return Ok(results);
         }
 
         [HttpGet("collection/({ids})", Name = "GetAuthorCollection")]
