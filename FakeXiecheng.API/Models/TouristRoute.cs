@@ -45,5 +45,9 @@ namespace FakeXiecheng.API.Models
 
         [MaxLength]
         public string Notes { get; set; }
+
+        public DateTime CreateTimeUTC { get; set; } = DateTime.UtcNow;
+
+        public DateTime? UpdateTimeUTC { get; set; }
     } 
 }

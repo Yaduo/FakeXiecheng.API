@@ -4,14 +4,16 @@ using FakeXiecheng.API.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FakeXiecheng.API.Migrations
 {
     [DbContext(typeof(TouristLibraryContext))]
-    partial class TouristLibraryContextModelSnapshot : ModelSnapshot
+    [Migration("20200331211218_AddDateTime")]
+    partial class AddDateTime
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
