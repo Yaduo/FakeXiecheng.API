@@ -50,7 +50,8 @@ namespace FakeXiecheng.API.Controllers
             return type switch
             {
                 ResourceUriType.PreviousPage => _urlHelper.Link("GetTouristRoutes",
-                    new {
+                    new
+                    {
                         keyword = parameters.Keyword,
                         rating = parameters.Rating,
                         pageNumber = parameters.PageNumber - 1,
@@ -59,7 +60,8 @@ namespace FakeXiecheng.API.Controllers
                         fields = parameters.Fields,
                     }),
                 ResourceUriType.NextPage => _urlHelper.Link("GetTouristRoutes",
-                    new {
+                    new
+                    {
                         keyword = parameters.Keyword,
                         rating = parameters.Rating,
                         pageNumber = parameters.PageNumber + 1,
@@ -68,7 +70,8 @@ namespace FakeXiecheng.API.Controllers
                         fields = parameters.Fields,
                     }),
                 _ => _urlHelper.Link("GetTouristRoutes",
-                    new {
+                    new
+                    {
                         keyword = parameters.Keyword,
                         rating = parameters.Rating,
                         pageNumber = parameters.PageNumber,
@@ -142,7 +145,7 @@ namespace FakeXiecheng.API.Controllers
 
             // using auto mapper
             var touristRoutes = _mapper.Map<IEnumerable<TouristRouteDto>>(touristRoutesFromRepo);
-            if(touristRoutes.Count() <= 0)
+            if (touristRoutes.Count() <= 0)
             {
                 return NotFound("no tourist routes found");
             }
@@ -172,22 +175,28 @@ namespace FakeXiecheng.API.Controllers
             return Ok(touristRoutes.ShapeData(parameters.Fields));
         }
 
-        [HttpGet("{routeId}", Name = "GetTouristRouteById")]
-        public IActionResult GetTouristRouteById(Guid routeId, string fields)
+        [HttpGet("{touristRouteId}", Name = "GetTouristRouteById")]
+        public IActionResult GetTouristRouteById(Guid touristRouteId, string fields)
         {
             if (!_propertyCheckerService.TypeHasProperties<TouristRouteDto>(fields))
             {
                 return BadRequest();
             }
 
-            var touristRouteFromRepo = _touristRouteRepository.GetTouristRouteById(routeId);
-
+            var touristRouteFromRepo = _touristRouteRepository.GetTouristRouteById(touristRouteId);
             if (touristRouteFromRepo == null)
             {
                 return NotFound();
             }
 
-            return Ok(_mapper.Map<TouristRouteDto>(touristRouteFromRepo).ShapeData(fields));
+            var links = CreateLinks(touristRouteId, fields);
+            var linkedResourceToReturn =
+                _mapper.Map<TouristRouteDto>(touristRouteFromRepo).ShapeData(fields)
+                as IDictionary<string, object>;
+            linkedResourceToReturn.Add("links", links);
+
+            //return Ok(_mapper.Map<TouristRouteDto>(touristRouteFromRepo).ShapeData(fields));
+            return Ok(linkedResourceToReturn);
         }
 
         [HttpGet("collection/({ids})", Name = "GetAuthorCollection")]
@@ -209,7 +218,7 @@ namespace FakeXiecheng.API.Controllers
             return Ok(_mapper.Map<IEnumerable<TouristRouteDto>>(touristRoute));
         }
 
-        [HttpPost]
+        [HttpPost(Name = "CreateTouristRoute")]
         public IActionResult CreateTouristRoute(TouristRouteForCreationDto touristRouteDto)
         {
             var touristRouteModel = _mapper.Map<TouristRoute>(touristRouteDto);
@@ -290,7 +299,7 @@ namespace FakeXiecheng.API.Controllers
             var touristRouteToPatch = _mapper.Map<TouristRouteForUpdateDto>(touristRouteFromRepo);
             patchDocument.ApplyTo(touristRouteToPatch, ModelState);
 
-            if(!TryValidateModel(touristRouteToPatch))
+            if (!TryValidateModel(touristRouteToPatch))
             {
                 return ValidationProblem(ModelState);
             }
@@ -313,8 +322,8 @@ namespace FakeXiecheng.API.Controllers
             return (ActionResult)options.Value.InvalidModelStateResponseFactory(ControllerContext);
         }
 
-        [HttpDelete("{touristRouteId}")]
-        public ActionResult DeleteCourseForAuthor(Guid touristRouteId)
+        [HttpDelete("{touristRouteId}", Name = "DeleteTouristRoute")]
+        public ActionResult DeleteTouristRoute(Guid touristRouteId)
         {
             var touristRouteFromRepo = _touristRouteRepository.GetTouristRouteById(touristRouteId);
             if (touristRouteFromRepo == null)
@@ -329,5 +338,27 @@ namespace FakeXiecheng.API.Controllers
             return NoContent();
         }
 
+        private IEnumerable<LinkDto> CreateLinks(Guid touristRouteId, string fields)
+        {
+            var links = new List<LinkDto>();
+
+            if (string.IsNullOrWhiteSpace(fields))
+            {
+                links.Add(new LinkDto(Url.Link("GetTouristRouteById", new { touristRouteId }) ,"self", "GET"));
+            }
+            else
+            {
+                links.Add(
+                  new LinkDto(Url.Link("GetTouristRouteById", new { touristRouteId, fields }), "self", "GET"));
+            }
+
+            links.Add(new LinkDto(Url.Link("DeleteTouristRoute", new { touristRouteId }), "delete_tourist_route", "DELETE"));
+
+            links.Add(new LinkDto(Url.Link("CreateTouristRoute", new { touristRouteId }), "create_tourist_route", "POST"));
+
+            links.Add(new LinkDto(Url.Link("GetPictureListForTouristRoute", new { touristRouteId }), "prictures", "GET"));
+
+            return links;
+        }
     }
 }
