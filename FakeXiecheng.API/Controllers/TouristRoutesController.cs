@@ -20,6 +20,7 @@ namespace FakeXiecheng.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [ResponseCache(CacheProfileName = "240SecondsCacheProfile")]
     public class TouristRoutesController : Controller //ControllerBase
     {
         private readonly ITouristRouteRepository _touristRouteRepository;
@@ -86,7 +87,7 @@ namespace FakeXiecheng.API.Controllers
 
         [HttpGet(Name = "GetTouristRoutes")]
         [HttpHead]
-        [ResponseCache(Duration = 120)]
+        //[ResponseCache(Duration = 120)]
         public IActionResult GetTouristRoutes([FromQuery] TouristRouteFilterParameters parameters)
         {
             if (!_propertyCheckerService.TypeHasProperties<TouristRouteDto>(parameters.Fields))
