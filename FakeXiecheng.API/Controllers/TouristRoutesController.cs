@@ -151,13 +151,13 @@ namespace FakeXiecheng.API.Controllers
             }
 
             // create Header
-            var previousPageLink = touristRoutesFromRepo.HasPrevious ?
-                    CreateAuthorsResourceUri(parameters,
-                    ResourceUriType.PreviousPage) : null;
+            var previousPageLink = touristRoutesFromRepo.HasPrevious
+                ? CreateAuthorsResourceUri(parameters,ResourceUriType.PreviousPage)
+                : null;
 
-            var nextPageLink = touristRoutesFromRepo.HasNext ?
-                CreateAuthorsResourceUri(parameters,
-                ResourceUriType.NextPage) : null;
+            var nextPageLink = touristRoutesFromRepo.HasNext
+                ? CreateAuthorsResourceUri(parameters, ResourceUriType.NextPage)
+                : null;
 
             var paginationMetadata = new
             {
@@ -172,7 +172,30 @@ namespace FakeXiecheng.API.Controllers
             Response.Headers.Add("X-Pagination",
                 Newtonsoft.Json.JsonConvert.SerializeObject(paginationMetadata));
 
-            return Ok(touristRoutes.ShapeData(parameters.Fields));
+            var links = CreateLinksForTouristRouteList(
+                    parameters,
+                    touristRoutesFromRepo.HasNext,
+                    touristRoutesFromRepo.HasPrevious
+                );
+
+            var shapedAuthors = _mapper.Map<IEnumerable<TouristRouteDto>>(touristRoutesFromRepo)
+                               .ShapeData(parameters.Fields);
+
+            var shapedAuthorsWithLinks = shapedAuthors.Select(author =>
+            {
+                var authorAsDictionary = author as IDictionary<string, object>;
+                var authorLinks = CreateLinksForTouristRoute((Guid)authorAsDictionary["Id"], null);
+                authorAsDictionary.Add("links", authorLinks);
+                return authorAsDictionary;
+            });
+
+            var linkedCollectionResource = new
+            {
+                value = shapedAuthorsWithLinks,
+                links
+            };
+
+            return Ok(linkedCollectionResource);
         }
 
         [HttpGet("{touristRouteId}", Name = "GetTouristRouteById")]
@@ -189,7 +212,7 @@ namespace FakeXiecheng.API.Controllers
                 return NotFound();
             }
 
-            var links = CreateLinks(touristRouteId, fields);
+            var links = CreateLinksForTouristRoute(touristRouteId, fields);
 
             var linkedResourceToReturn =
                 _mapper.Map<TouristRouteDto>(touristRouteFromRepo).ShapeData(fields)
@@ -197,7 +220,6 @@ namespace FakeXiecheng.API.Controllers
 
             linkedResourceToReturn.Add("links", links);
 
-            //return Ok(_mapper.Map<TouristRouteDto>(touristRouteFromRepo).ShapeData(fields));
             return Ok(linkedResourceToReturn);
         }
 
@@ -230,7 +252,7 @@ namespace FakeXiecheng.API.Controllers
 
             var touristRouteToReturn = _mapper.Map<TouristRouteDto>(touristRouteModel);
 
-            var links = CreateLinks(touristRouteToReturn.Id, null);
+            var links = CreateLinksForTouristRoute(touristRouteToReturn.Id, null);
 
             var linkedResourceToReturn =
                 _mapper.Map<TouristRouteDto>(touristRouteToReturn).ShapeData(null)
@@ -351,7 +373,7 @@ namespace FakeXiecheng.API.Controllers
             return NoContent();
         }
 
-        private IEnumerable<LinkDto> CreateLinks(Guid touristRouteId, string fields)
+        private IEnumerable<LinkDto> CreateLinksForTouristRoute(Guid touristRouteId, string fields)
         {
             var links = new List<LinkDto>();
 
@@ -370,6 +392,30 @@ namespace FakeXiecheng.API.Controllers
             links.Add(new LinkDto(Url.Link("CreateTouristRoute", new { touristRouteId }), "create_tourist_route", "POST"));
 
             links.Add(new LinkDto(Url.Link("GetPictureListForTouristRoute", new { touristRouteId }), "prictures", "GET"));
+
+            return links;
+        }
+
+        private IEnumerable<LinkDto> CreateLinksForTouristRouteList(
+            TouristRouteFilterParameters parameters,
+            bool hasNext,
+            bool hasPrevious
+        )
+        {
+            var links = new List<LinkDto>();
+
+            // self 
+            links.Add(new LinkDto(CreateAuthorsResourceUri(parameters, ResourceUriType.Current), "self", "GET"));
+
+            if (hasNext)
+            {
+                links.Add(new LinkDto(CreateAuthorsResourceUri(parameters, ResourceUriType.NextPage), "nextPage", "GET"));
+            }
+
+            if (hasPrevious)
+            {
+                links.Add(new LinkDto(CreateAuthorsResourceUri(parameters, ResourceUriType.PreviousPage), "previousPage", "GET"));
+            }
 
             return links;
         }
