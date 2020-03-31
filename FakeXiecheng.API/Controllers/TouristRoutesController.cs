@@ -190,9 +190,11 @@ namespace FakeXiecheng.API.Controllers
             }
 
             var links = CreateLinks(touristRouteId, fields);
+
             var linkedResourceToReturn =
                 _mapper.Map<TouristRouteDto>(touristRouteFromRepo).ShapeData(fields)
                 as IDictionary<string, object>;
+
             linkedResourceToReturn.Add("links", links);
 
             //return Ok(_mapper.Map<TouristRouteDto>(touristRouteFromRepo).ShapeData(fields));
@@ -222,13 +224,24 @@ namespace FakeXiecheng.API.Controllers
         public IActionResult CreateTouristRoute(TouristRouteForCreationDto touristRouteDto)
         {
             var touristRouteModel = _mapper.Map<TouristRoute>(touristRouteDto);
+
             _touristRouteRepository.AddTouristRoute(touristRouteModel);
             _touristRouteRepository.Save();
+
             var touristRouteToReturn = _mapper.Map<TouristRouteDto>(touristRouteModel);
+
+            var links = CreateLinks(touristRouteToReturn.Id, null);
+
+            var linkedResourceToReturn =
+                _mapper.Map<TouristRouteDto>(touristRouteToReturn).ShapeData(null)
+                as IDictionary<string, object>;
+
+            linkedResourceToReturn.Add("links", links);
+
             return CreatedAtRoute(
                     "GetTouristRouteById",
-                    new { routeId = touristRouteToReturn.Id },
-                    touristRouteToReturn
+                    new { touristRouteId = linkedResourceToReturn["Id"] },
+                    linkedResourceToReturn
                 );
         }
 
@@ -252,7 +265,7 @@ namespace FakeXiecheng.API.Controllers
                 var touristRouteToReturn = _mapper.Map<TouristRouteDto>(touristRouteToAdd);
                 return CreatedAtRoute(
                     "GetTouristRouteById",
-                    new { routeId = touristRouteToReturn.Id },
+                    new { touristRouteId = touristRouteToReturn.Id },
                     touristRouteToReturn
                 );
             }
@@ -290,7 +303,7 @@ namespace FakeXiecheng.API.Controllers
                 var touristRouteToReturn = _mapper.Map<TouristRouteDto>(touristRouteToAdd);
                 return CreatedAtRoute(
                     "GetTouristRouteById",
-                    new { routeId = touristRouteToReturn.Id },
+                    new { touristRouteId = touristRouteToReturn.Id },
                     touristRouteToReturn
                 );
             }
