@@ -135,8 +135,13 @@ namespace FakeXiecheng.API
 
             app.UseResponseCaching();
 
+            // where you are?
             app.UseRouting();
 
+            // who you are?
+            app.UseAuthentication();
+
+            // are you allowed?
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
