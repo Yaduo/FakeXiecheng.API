@@ -34,6 +34,7 @@ namespace FakeXiecheng.API
                 .AddCookie(options =>
                 {
                     options.Cookie.Name = "FakeXiecheng.Cookie";
+                    options.LoginPath = "/api";
                 });
 
             services.AddResponseCaching();
