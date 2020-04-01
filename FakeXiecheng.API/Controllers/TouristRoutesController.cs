@@ -7,6 +7,7 @@ using FakeXiecheng.API.Dtos;
 using FakeXiecheng.API.Helpers;
 using FakeXiecheng.API.Models;
 using FakeXiecheng.API.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -342,6 +343,7 @@ namespace FakeXiecheng.API.Controllers
             "application/vnd.fakeXiecheng.createTouristRoute+json"
         )]
         [Consumes("application/json", "application/vnd.fakeXiecheng.createTouristRoute+json")]
+        [Authorize]
         public IActionResult CreateTouristRoute(TouristRouteForCreationDto touristRouteDto)
         {
             var touristRouteModel = _mapper.Map<TouristRoute>(touristRouteDto);

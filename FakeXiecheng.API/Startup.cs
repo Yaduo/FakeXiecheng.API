@@ -3,6 +3,7 @@ using System.Linq;
 using AutoMapper;
 using FakeXiecheng.API.DbContexts;
 using FakeXiecheng.API.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -29,6 +30,12 @@ namespace FakeXiecheng.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.Cookie.Name = "FakeXiecheng.Cookie";
+                });
+
             services.AddResponseCaching();
 
             services.AddControllers(setupAction =>
@@ -118,6 +125,8 @@ namespace FakeXiecheng.API
             app.UseResponseCaching();
 
             app.UseRouting();
+
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
