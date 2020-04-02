@@ -90,10 +90,11 @@ namespace FakeXiecheng.API.Controllers
             }
 
             var pictureListModel = _mapper.Map<IEnumerable<TouristRoutePicture>>(pictureList);
-            foreach (var picture in pictureListModel) {
-                // 效率很低，怎么办呢？
-                await _touristRouteRepository.AddTouristRoutePictureAsync(touristRouteId, picture);
-            }
+            // for loop 进行IO操作, 严重影响效率，怎么办呢？
+            //foreach (var picture in pictureListModel) {
+            //    await _touristRouteRepository.AddTouristRoutePictureAsync(touristRouteId, picture);
+            //}
+            await _touristRouteRepository.AddRangeForTouristRoutePictureListAsync(touristRouteId, pictureListModel);
             await _touristRouteRepository.SaveAsync();
             var pictureListToReturn = _mapper.Map<IEnumerable<TouristRoutePictureDto>>(pictureListModel);
             return CreatedAtRoute("GetPictureListForTouristRoute",

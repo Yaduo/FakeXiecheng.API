@@ -164,6 +164,26 @@ namespace FakeXiecheng.API.Services
             await _context.TouristRoutePictures.AddAsync(picture);
         }
 
+        public async Task AddRangeForTouristRoutePictureListAsync(
+            Guid touristRouteId,
+            IEnumerable<TouristRoutePicture> pictures
+        )
+        {
+            if (touristRouteId == Guid.Empty)
+            {
+                throw new ArgumentNullException(nameof(touristRouteId));
+            }
+            if (pictures.Count() == 0)
+            {
+                throw new ArgumentNullException("no picture insert");
+            }
+            var picturesToAdd = pictures.Select(p => {
+                p.TouristRouteId = touristRouteId;
+                return p;
+            });
+            await _context.TouristRoutePictures.AddRangeAsync(picturesToAdd);
+        }
+
         public async Task<bool> SaveAsync()
         {
             return (await _context.SaveChangesAsync()) >= 0;

@@ -33,6 +33,7 @@ namespace FakeXiecheng.API.Services
         Task<TouristRoutePicture> GetPicturesByTouristRouteIdAndPictureIdAsync(Guid touristRouteId, int pictureId);
         // 想一想 为什么 add picture 要用 async？？
         Task AddTouristRoutePictureAsync(Guid touristRouteId, TouristRoutePicture picture);
+        Task AddRangeForTouristRoutePictureListAsync(Guid touristRouteId, IEnumerable<TouristRoutePicture> pictures);
         Task<bool> SaveAsync();
     }
 }
