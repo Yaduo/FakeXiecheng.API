@@ -30,14 +30,14 @@ namespace FakeXiecheng.API.Controllers
 
         // GET: /<controller>/
         [HttpGet(Name = "GetPictureListForTouristRoute")]
-        public IActionResult GetPictureListForTouristRoute(Guid touristRouteId)
+        public async Task<IActionResult> GetPictureListForTouristRoute(Guid touristRouteId)
         {
-            if (!_touristRouteRepository.TouristRouteExists(touristRouteId))
+            if (!(await _touristRouteRepository.TouristRouteExistsAsync(touristRouteId)))
             {
                 return NotFound("no tourist route found");
             }
 
-            var picturesFromRepo = _touristRouteRepository.GetPicturesByTouristRouteId(touristRouteId);
+            var picturesFromRepo = await _touristRouteRepository.GetPicturesByTouristRouteIdAsync(touristRouteId);
             if (picturesFromRepo == null || picturesFromRepo.Count() <= 0)
             {
                 return NotFound("no picture found");
@@ -47,13 +47,13 @@ namespace FakeXiecheng.API.Controllers
         }
 
         [HttpGet("{pictureId}", Name = "GetPictureForTouristRoute")]
-        public IActionResult GetPictures(Guid touristRouteId, int pictureId)
+        public async Task<IActionResult> GetPictures(Guid touristRouteId, int pictureId)
         {
-            if (!_touristRouteRepository.TouristRouteExists(touristRouteId))
+            if (!(await _touristRouteRepository.TouristRouteExistsAsync(touristRouteId)))
             {
                 return NotFound("no tourist route found");
             }
-            var pictureFromRepo = _touristRouteRepository.GetPicturesByTouristRouteIdAndPictureId(touristRouteId, pictureId);
+            var pictureFromRepo = await _touristRouteRepository.GetPicturesByTouristRouteIdAndPictureIdAsync(touristRouteId, pictureId);
             if (pictureFromRepo == null)
             {
                 return NotFound("no picture found");
@@ -63,16 +63,16 @@ namespace FakeXiecheng.API.Controllers
 
 
         [HttpPost]
-        public ActionResult CreatePictureForAuthor(Guid touristRouteId, TouristRoutePictureForCreationDto picture)
+        public async Task<IActionResult> CreatePictureForAuthor(Guid touristRouteId, TouristRoutePictureForCreationDto picture)
         {
-            if (!_touristRouteRepository.TouristRouteExists(touristRouteId))
+            if (!(await _touristRouteRepository.TouristRouteExistsAsync(touristRouteId)))
             {
                 return NotFound("no tourist route found");
             }
 
             var pictureModel = _mapper.Map<TouristRoutePicture>(picture);
-            _touristRouteRepository.AddTouristRoutePicture(touristRouteId, pictureModel);
-            _touristRouteRepository.Save();
+            await _touristRouteRepository.AddTouristRoutePictureAsync(touristRouteId, pictureModel);
+            await _touristRouteRepository.SaveAsync();
             var pictureToReturn = _mapper.Map<TouristRoutePictureDto>(pictureModel);
             return CreatedAtRoute(
                     "GetPictureForTouristRoute",
@@ -82,18 +82,19 @@ namespace FakeXiecheng.API.Controllers
         }
 
         [HttpPost("collection")]
-        public ActionResult CreatePictureListForAuthor(Guid touristRouteId, IEnumerable<TouristRoutePictureForCreationDto> pictureList)
+        public async Task<IActionResult> CreatePictureListForAuthor(Guid touristRouteId, IEnumerable<TouristRoutePictureForCreationDto> pictureList)
         {
-            if (!_touristRouteRepository.TouristRouteExists(touristRouteId))
+            if (!(await _touristRouteRepository.TouristRouteExistsAsync(touristRouteId)))
             {
                 return NotFound("no tourist route found");
             }
 
             var pictureListModel = _mapper.Map<IEnumerable<TouristRoutePicture>>(pictureList);
             foreach (var picture in pictureListModel) {
-                _touristRouteRepository.AddTouristRoutePicture(touristRouteId, picture);
+                // 效率很低，怎么办呢？
+                await _touristRouteRepository.AddTouristRoutePictureAsync(touristRouteId, picture);
             }
-            _touristRouteRepository.Save();
+            await _touristRouteRepository.SaveAsync();
             var pictureListToReturn = _mapper.Map<IEnumerable<TouristRoutePictureDto>>(pictureListModel);
             return CreatedAtRoute("GetPictureListForTouristRoute",
              new { touristRouteId },

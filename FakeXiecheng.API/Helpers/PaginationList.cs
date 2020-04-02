@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace FakeXiecheng.API.Helpers
 {
@@ -36,10 +38,13 @@ namespace FakeXiecheng.API.Helpers
             AddRange(items);
         }
 
-        public static PaginationList<T> Create(IQueryable<T> source, int pageNumber, int pageSize)
+        public static async Task<PaginationList<T>> Create(IQueryable<T> source, int pageNumber, int pageSize)
         {
-            var count = source.Count();
-            var items = source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+            // Unfortunately, in order to paginate, you must query database twice
+            // 1. get total count
+            var count = await source.CountAsync();
+            // 2. get paged items
+            var items = await source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
             return new PaginationList<T>(items, count, pageNumber, pageSize);
         }
     }
