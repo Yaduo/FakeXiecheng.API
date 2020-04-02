@@ -24,11 +24,14 @@ namespace FakeXiecheng.API.Services
         Task<PaginationList<TouristRoute>> GetTouristRoutesAsync(TouristRouteFilterParameters filterParameters);
         Task<IEnumerable<TouristRoute>> GetTouristRoutesByIdListAsync(IEnumerable<Guid> touristRouteIds);
         Task<TouristRoute> GetTouristRouteByIdAsync(Guid routeId);
-        Task AddTouristRouteAsync(TouristRoute route);
+        //Task AddTouristRouteAsync(TouristRoute route);
+        // 更合理是不用 async 来添加 TouristRoute
+        void AddTouristRoute(TouristRoute route);
         void UpdateTouristRoute(TouristRoute route);
         void DeleteTouristRoute(TouristRoute route);
         Task<IEnumerable<TouristRoutePicture>> GetPicturesByTouristRouteIdAsync(Guid touristRouteId);
         Task<TouristRoutePicture> GetPicturesByTouristRouteIdAndPictureIdAsync(Guid touristRouteId, int pictureId);
+        // 想一想 为什么 add picture 要用 async？？
         Task AddTouristRoutePictureAsync(Guid touristRouteId, TouristRoutePicture picture);
         Task<bool> SaveAsync();
     }

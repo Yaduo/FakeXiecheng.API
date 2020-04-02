@@ -307,6 +307,8 @@ namespace FakeXiecheng.API.Controllers
             return Ok(_mapper.Map<IEnumerable<TouristRouteDto>>(touristRoute));
         }
 
+
+        // 注意，次函数必须排在CreateTouristRoute前面，否则没法匹配Consumes
         [HttpPost(Name = "CreateTouristRouteWithTripAttribute")]
         [RequestHeaderMatchesMediaType(
             "Content-Type",
@@ -317,7 +319,7 @@ namespace FakeXiecheng.API.Controllers
         {
             var touristRouteModel = _mapper.Map<TouristRoute>(touristRouteDto);
 
-            await _touristRouteRepository.AddTouristRouteAsync(touristRouteModel);
+            _touristRouteRepository.AddTouristRoute(touristRouteModel);
             await _touristRouteRepository.SaveAsync();
 
             var touristRouteToReturn = _mapper.Map<TouristRouteDto>(touristRouteModel);
@@ -349,7 +351,7 @@ namespace FakeXiecheng.API.Controllers
         {
             var touristRouteModel = _mapper.Map<TouristRoute>(touristRouteDto);
 
-            await _touristRouteRepository.AddTouristRouteAsync(touristRouteModel);
+            _touristRouteRepository.AddTouristRoute(touristRouteModel);
             await _touristRouteRepository.SaveAsync();
 
             var touristRouteToReturn = _mapper.Map<TouristRouteDto>(touristRouteModel);
@@ -384,7 +386,7 @@ namespace FakeXiecheng.API.Controllers
             {
                 var touristRouteToAdd = _mapper.Map<TouristRoute>(touristRouteDto);
                 touristRouteToAdd.Id = touristRouteId;
-                await _touristRouteRepository.AddTouristRouteAsync(touristRouteToAdd);
+                _touristRouteRepository.AddTouristRoute(touristRouteToAdd);
                 await _touristRouteRepository.SaveAsync();
                 var touristRouteToReturn = _mapper.Map<TouristRouteDto>(touristRouteToAdd);
                 return CreatedAtRoute(
@@ -421,7 +423,7 @@ namespace FakeXiecheng.API.Controllers
                 var touristRouteToAdd = _mapper.Map<TouristRoute>(touristRouteDto);
                 touristRouteToAdd.Id = touristRouteId;
 
-                await _touristRouteRepository.AddTouristRouteAsync(touristRouteToAdd);
+                _touristRouteRepository.AddTouristRoute(touristRouteToAdd);
                 await _touristRouteRepository.SaveAsync();
 
                 var touristRouteToReturn = _mapper.Map<TouristRouteDto>(touristRouteToAdd);

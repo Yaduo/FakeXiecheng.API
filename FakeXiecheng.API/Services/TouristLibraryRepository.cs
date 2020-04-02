@@ -109,13 +109,13 @@ namespace FakeXiecheng.API.Services
                 .FirstOrDefaultAsync();
         }
 
-        public async Task AddTouristRouteAsync(TouristRoute route)
+        public void AddTouristRoute(TouristRoute route)
         {
             if (route == null)
             {
                 throw new ArgumentNullException(nameof(route));
             }
-            await _context.TouristRoutes.AddAsync(route);
+            _context.TouristRoutes.Add(route);
         }
 
         public void UpdateTouristRoute(TouristRoute route)
