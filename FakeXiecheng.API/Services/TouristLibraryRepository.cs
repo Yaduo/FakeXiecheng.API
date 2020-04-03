@@ -110,7 +110,12 @@ namespace FakeXiecheng.API.Services
 
         public async Task<TouristRoute> GetTouristRouteByIdAsync(Guid routeId)
         {
-            var calculate = CpuFullyLoadedTasker.ComplicatCalculation();
+            // synchronous 方式
+            //var calculate = CpuFullyLoadedTasker.ComplicatCalculation();
+
+            // asynchronous 方式
+            _logger.LogInformation($"ThreadId when entering GetCpuFullyLoadedAsync() : {System.Threading.Thread.CurrentThread.ManagedThreadId}");
+            var calculate = await GetCpuFullyLoadedAsync();
 
             if (routeId == Guid.Empty)
             {
@@ -120,6 +125,16 @@ namespace FakeXiecheng.API.Services
                 .Include(t => t.TouristRoutePictures)
                 .Where(c => c.Id == routeId)
                 .FirstOrDefaultAsync();
+        }
+
+        private Task<int> GetCpuFullyLoadedAsync()
+        {
+            return Task.Run(() =>
+            {
+                _logger.LogInformation($"ThreadId when calculate CPU full load test: {System.Threading.Thread.CurrentThread.ManagedThreadId}");
+
+                return CpuFullyLoadedTasker.ComplicatCalculation();
+            });
         }
 
         public void AddTouristRoute(TouristRoute route)
