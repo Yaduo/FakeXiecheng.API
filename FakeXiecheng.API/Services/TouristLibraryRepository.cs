@@ -3,11 +3,13 @@ using FakeXiecheng.API.Dtos;
 using FakeXiecheng.API.Helpers;
 using FakeXiecheng.API.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FakeXiecheng.API.Services
@@ -17,16 +19,20 @@ namespace FakeXiecheng.API.Services
         private readonly TouristLibraryContext _context;
         private readonly IPropertyMappingService _propertyMappingService;
         private readonly IHttpClientFactory _httpClientFactory;
+        private CancellationTokenSource _cancellationTokenSource;
+        private readonly ILogger<TouristRouteRepository> _logger;
 
         public TouristRouteRepository(
             TouristLibraryContext context,
             IPropertyMappingService propertyMappingService,
-            IHttpClientFactory httpClientFactory
+            IHttpClientFactory httpClientFactory,
+            ILogger<TouristRouteRepository> logger
         )
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _propertyMappingService = propertyMappingService ?? throw new ArgumentNullException(nameof(propertyMappingService));
             _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         public async Task<bool> TouristRouteExistsAsync(Guid touristRouteId)
@@ -210,6 +216,11 @@ namespace FakeXiecheng.API.Services
                 {
                     _context.Dispose();
                 }
+                if (_cancellationTokenSource != null)
+                {
+                    _cancellationTokenSource.Dispose();
+                    _cancellationTokenSource = null;
+                }
             }
         }
 
@@ -222,8 +233,9 @@ namespace FakeXiecheng.API.Services
 
             var httpClient = _httpClientFactory.CreateClient();
 
+            _cancellationTokenSource = new CancellationTokenSource();
 
-            return await this.GetFakeImagehttpResponse(httpClient, url);
+            return await this.GetFakeImagehttpResponse(httpClient, url, _cancellationTokenSource.Token);
 
             //var response = await httpClient.GetAsync(url);
 
@@ -253,26 +265,58 @@ namespace FakeXiecheng.API.Services
             //}
             //return results;
 
+            _cancellationTokenSource = new CancellationTokenSource();
+
             // create the tasks
             var downloadFakeImageTasksQuery =
                  from url
                  in urls
-                 select GetFakeImagehttpResponse(httpClient, url);
+                 select GetFakeImagehttpResponse(httpClient, url, _cancellationTokenSource.Token);
 
             // start the tasks
             var downloadFakeImageTasks = downloadFakeImageTasksQuery.ToList();
 
-            return await Task.WhenAll(downloadFakeImageTasks);
+            try
+            {
+                return await Task.WhenAll(downloadFakeImageTasks);
+            }
+            catch (OperationCanceledException operationCanceledException)
+            {
+                _logger.LogInformation($"{operationCanceledException.Message}");
+                foreach (var task in downloadFakeImageTasks)
+                {
+                    _logger.LogInformation($"Task {task.Id} has status {task.Status}");
+                }
+                return new List<object>();
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError($"{exception.Message}");
+                // 异常需要一层一层向上抛， 继续向上抛出异常，抛给controller
+                throw exception;
+            }
         }
 
-        private async Task<object> GetFakeImagehttpResponse(HttpClient httpClient, string url)
+        private async Task<object> GetFakeImagehttpResponse(
+            HttpClient httpClient,
+            string url,
+            CancellationToken cancellationToken
+        )
         {
-            var response = await httpClient.GetAsync(url);
+            // 测试，随便抛出一个异常，也需要被上层处理
+            //throw new Exception("Cannot download book cover, writer isn't finishing book fast enough.");
+
+            var response = await httpClient.GetAsync(url, cancellationToken);
+
             if (response.IsSuccessStatusCode)
             {
                 return JsonConvert.DeserializeObject<object>(
                     await response.Content.ReadAsStringAsync());
             }
+
+            // 任务终止，抛出异常
+            _cancellationTokenSource.Cancel();
+
             return null;
         }
     }
