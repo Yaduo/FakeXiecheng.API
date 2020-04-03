@@ -182,7 +182,8 @@ namespace FakeXiecheng.API.Services
             {
                 throw new ArgumentNullException("no picture insert");
             }
-            var picturesToAdd = pictures.Select(p => {
+            var picturesToAdd = pictures.Select(p =>
+            {
                 p.TouristRouteId = touristRouteId;
                 return p;
             });
@@ -221,35 +222,58 @@ namespace FakeXiecheng.API.Services
 
             var httpClient = _httpClientFactory.CreateClient();
 
-            var response = await httpClient.GetAsync(url);
 
+            return await this.GetFakeImagehttpResponse(httpClient, url);
+
+            //var response = await httpClient.GetAsync(url);
+
+            //if (response.IsSuccessStatusCode)
+            //{
+            //    return JsonConvert.DeserializeObject<object>(
+            //        await response.Content.ReadAsStringAsync());
+            //}
+
+            //return null;
+        }
+
+        public async Task<IEnumerable<object>> DownloadFakeImageListFromExternalAPI(IEnumerable<string> urls)
+        {
+            var httpClient = _httpClientFactory.CreateClient();
+
+            //IList<object> results = new List<object>();
+            //foreach (var url in urls)
+            //{
+            //    var response = await httpClient.GetAsync(url);
+            //    if (response.IsSuccessStatusCode)
+            //    {
+            //        results.Add(JsonConvert.DeserializeObject<object>(
+            //            await response.Content.ReadAsStringAsync()));
+
+            //    }
+            //}
+            //return results;
+
+            // create the tasks
+            var downloadFakeImageTasksQuery =
+                 from url
+                 in urls
+                 select GetFakeImagehttpResponse(httpClient, url);
+
+            // start the tasks
+            var downloadFakeImageTasks = downloadFakeImageTasksQuery.ToList();
+
+            return await Task.WhenAll(downloadFakeImageTasks);
+        }
+
+        private async Task<object> GetFakeImagehttpResponse(HttpClient httpClient, string url)
+        {
+            var response = await httpClient.GetAsync(url);
             if (response.IsSuccessStatusCode)
             {
                 return JsonConvert.DeserializeObject<object>(
                     await response.Content.ReadAsStringAsync());
             }
-
             return null;
-        }
-
-        public async Task<IEnumerable<object>> DownloadFakeImageListFromExternalAPI(IEnumerable<string> urls)
-        {
-            IList<object> results = new List<object>();
-
-            var httpClient = _httpClientFactory.CreateClient();
-
-            foreach (var url in urls)
-            {
-                var response = await httpClient.GetAsync(url);
-                if (response.IsSuccessStatusCode)
-                {
-                    results.Add(JsonConvert.DeserializeObject<object>(
-                        await response.Content.ReadAsStringAsync()));
-
-                }
-            }
-
-            return results;
         }
     }
 }
