@@ -12,8 +12,8 @@ namespace FakeXiecheng.API.Controllers
     [Route("api/[controller]")]
     public class FakeVanderHttpRequestController : Controller
     {
-        [HttpGet()]
-        public async Task<IActionResult> FakeGetRequest( bool returnFault = false)
+        [HttpGet(Name = "GetFakeImageRequest")]
+        public async Task<IActionResult> GetFakeImageRequest( bool returnFault = false)
         {
             // if returnFault is true, wait 500ms and
             // return an Internal Server Error

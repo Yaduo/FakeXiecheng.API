@@ -3,9 +3,11 @@ using FakeXiecheng.API.Dtos;
 using FakeXiecheng.API.Helpers;
 using FakeXiecheng.API.Models;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace FakeXiecheng.API.Services
@@ -14,14 +16,17 @@ namespace FakeXiecheng.API.Services
     {
         private readonly TouristLibraryContext _context;
         private readonly IPropertyMappingService _propertyMappingService;
+        private readonly IHttpClientFactory _httpClientFactory;
 
         public TouristRouteRepository(
             TouristLibraryContext context,
-            IPropertyMappingService propertyMappingService
+            IPropertyMappingService propertyMappingService,
+            IHttpClientFactory httpClientFactory
         )
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _propertyMappingService = propertyMappingService ?? throw new ArgumentNullException(nameof(propertyMappingService));
+            _httpClientFactory = httpClientFactory ?? throw new ArgumentNullException(nameof(httpClientFactory));
         }
 
         public async Task<bool> TouristRouteExistsAsync(Guid touristRouteId)
@@ -205,6 +210,27 @@ namespace FakeXiecheng.API.Services
                     _context.Dispose();
                 }
             }
+        }
+
+        public async Task<object> GetFakeImageContentFromExternalAPI(string url)
+        {
+            // Call API by http GET request
+            // commet是因为有更好的方式，就是HttpClientFactory
+            // 需要提前注入依赖 services.AddHttpClient();
+            // var httpClient = new HttpClient(); 
+
+            var httpClient = _httpClientFactory.CreateClient();
+
+            // pass through a dummy name
+            var response = await httpClient.GetAsync(url);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return JsonConvert.DeserializeObject<object>(
+                    await response.Content.ReadAsStringAsync());
+            }
+
+            return null;
         }
     }
 }

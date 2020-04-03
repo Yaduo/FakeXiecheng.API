@@ -285,7 +285,16 @@ namespace FakeXiecheng.API.Controllers
                 results.Add("links", links);
             }
 
-            return Ok(results);
+            var getFakeImageExternalUrl = _urlHelper.Link("GetFakeImageRequest", null);
+
+            var fakeImageContent = await _touristRouteRepository.GetFakeImageContentFromExternalAPI(getFakeImageExternalUrl);
+
+            //return Ok(results);
+            return Ok(new
+            {
+                results,
+                fakeImageContent
+            });
         }
 
         [HttpGet("collection/({ids})", Name = "GetAuthorCollection")]
