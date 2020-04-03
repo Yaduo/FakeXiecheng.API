@@ -285,15 +285,23 @@ namespace FakeXiecheng.API.Controllers
                 results.Add("links", links);
             }
 
-            var getFakeImageExternalUrl = _urlHelper.Link("GetFakeImageRequest", null);
+            //var getFakeImageExternalUrl = _urlHelper.Link("GetFakeImageRequest", null);
+            //var fakeImageContent = await _touristRouteRepository.DownloadFakeImageFromExternalAPI(getFakeImageExternalUrl);
 
-            var fakeImageContent = await _touristRouteRepository.DownloadFakeImageContentFromExternalAPI(getFakeImageExternalUrl);
+            var getFakeImageExternalUrls = new List<string>()
+            {
+                _urlHelper.Link("GetFakeImageRequest", null),
+                _urlHelper.Link("GetFakeImageRequest", null),
+                _urlHelper.Link("GetFakeImageRequest", null)
+            };
+            var fakeImageContentList = await _touristRouteRepository.DownloadFakeImageListFromExternalAPI(getFakeImageExternalUrls);
 
             //return Ok(results);
             return Ok(new
             {
                 results,
-                fakeImageContent
+                //fakeImageContent
+                fakeImageContentList
             });
         }
 

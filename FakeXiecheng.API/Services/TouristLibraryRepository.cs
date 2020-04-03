@@ -44,7 +44,7 @@ namespace FakeXiecheng.API.Services
             //    _context.TouristRoutes
             //    .Include(t => t.TouristRoutePictures);
 
-            IQueryable<TouristRoute> collectionBeforePaging =_context.TouristRoutes
+            IQueryable<TouristRoute> collectionBeforePaging = _context.TouristRoutes
                 .Include(t => t.TouristRoutePictures)
                 .ApplySort(filterParameters.OrderBy, _propertyMappingService.GetPropertyMapping<TouristRouteDto, TouristRoute>());
             // filter keyword
@@ -130,7 +130,7 @@ namespace FakeXiecheng.API.Services
 
         public void DeleteTouristRoute(TouristRoute route)
         {
-           _context.TouristRoutes.Remove(route);
+            _context.TouristRoutes.Remove(route);
         }
 
         public async Task<IEnumerable<TouristRoutePicture>> GetPicturesByTouristRouteIdAsync(Guid touristRouteId)
@@ -205,14 +205,14 @@ namespace FakeXiecheng.API.Services
             if (disposing)
             {
                 // dispose resources when needed
-                if(_context != null)
+                if (_context != null)
                 {
                     _context.Dispose();
                 }
             }
         }
 
-        public async Task<object> DownloadFakeImageContentFromExternalAPI(string url)
+        public async Task<object> DownloadFakeImageFromExternalAPI(string url)
         {
             // Call API by http GET request
             // commet是因为有更好的方式，就是HttpClientFactory
@@ -221,7 +221,6 @@ namespace FakeXiecheng.API.Services
 
             var httpClient = _httpClientFactory.CreateClient();
 
-            // pass through a dummy name
             var response = await httpClient.GetAsync(url);
 
             if (response.IsSuccessStatusCode)
@@ -231,6 +230,26 @@ namespace FakeXiecheng.API.Services
             }
 
             return null;
+        }
+
+        public async Task<IEnumerable<object>> DownloadFakeImageListFromExternalAPI(IEnumerable<string> urls)
+        {
+            IList<object> results = new List<object>();
+
+            var httpClient = _httpClientFactory.CreateClient();
+
+            foreach (var url in urls)
+            {
+                var response = await httpClient.GetAsync(url);
+                if (response.IsSuccessStatusCode)
+                {
+                    results.Add(JsonConvert.DeserializeObject<object>(
+                        await response.Content.ReadAsStringAsync()));
+
+                }
+            }
+
+            return results;
         }
     }
 }

@@ -35,6 +35,7 @@ namespace FakeXiecheng.API.Services
         Task AddTouristRoutePictureAsync(Guid touristRouteId, TouristRoutePicture picture);
         Task AddRangeForTouristRoutePictureListAsync(Guid touristRouteId, IEnumerable<TouristRoutePicture> pictures);
         Task<bool> SaveAsync();
-        Task<object> DownloadFakeImageContentFromExternalAPI(string url);
+        Task<object> DownloadFakeImageFromExternalAPI(string url);
+        Task<IEnumerable<object>> DownloadFakeImageListFromExternalAPI(IEnumerable<string> urls);
     }
 }
