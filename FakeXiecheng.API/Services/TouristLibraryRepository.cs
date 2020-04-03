@@ -212,7 +212,7 @@ namespace FakeXiecheng.API.Services
             }
         }
 
-        public async Task<object> GetFakeImageContentFromExternalAPI(string url)
+        public async Task<object> DownloadFakeImageContentFromExternalAPI(string url)
         {
             // Call API by http GET request
             // commet是因为有更好的方式，就是HttpClientFactory

@@ -287,7 +287,7 @@ namespace FakeXiecheng.API.Controllers
 
             var getFakeImageExternalUrl = _urlHelper.Link("GetFakeImageRequest", null);
 
-            var fakeImageContent = await _touristRouteRepository.GetFakeImageContentFromExternalAPI(getFakeImageExternalUrl);
+            var fakeImageContent = await _touristRouteRepository.DownloadFakeImageContentFromExternalAPI(getFakeImageExternalUrl);
 
             //return Ok(results);
             return Ok(new
