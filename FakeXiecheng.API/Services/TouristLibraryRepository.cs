@@ -110,6 +110,8 @@ namespace FakeXiecheng.API.Services
 
         public async Task<TouristRoute> GetTouristRouteByIdAsync(Guid routeId)
         {
+            var calculate = CpuFullyLoadedTasker.ComplicatCalculation();
+
             if (routeId == Guid.Empty)
             {
                 throw new ArgumentNullException(nameof(routeId));
