@@ -56,19 +56,23 @@ namespace FakeXiecheng.API
                 //var defaultAuthBuilder = new AuthorizationPolicyBuilder();
                 //var defaultAuthPolicy = defaultAuthBuilder
                 //.RequireAuthenticatedUser()  
-                //.RequireClaim(ClaimTypes.Role)
+                //.RequireClaim(ClaimTypes.Email)
                 //.Build();
                 //option.DefaultPolicy = defaultAuthPolicy;
 
-                //option.AddPolicy("Claim.Role", policyBuilder => 
+                //option.AddPolicy("ClaimEmailMustToHave", policyBuilder => 
                 //{
-                //    policyBuilder.RequireClaim(ClaimTypes.Role);
+                //    policyBuilder.RequireClaim(ClaimTypes.Email);
                 //});
 
                 option.AddPolicy("ClaimEmailMustToHave", policyBuilder =>
                 {
                     policyBuilder.AddRequirements(new FakeXiechengRequireClaim(ClaimTypes.Email));
                 });
+
+                // 可选, 使用方式：[Authorize(Policy = "Admin")]
+                //option.AddPolicy("Admin", policyBuilder => policyBuilder.RequireClaim(ClaimTypes.Role, "Admin"));
+
             });
 
             services.AddScoped<IAuthorizationHandler, FakeXiechengRequireClaimHandler>();

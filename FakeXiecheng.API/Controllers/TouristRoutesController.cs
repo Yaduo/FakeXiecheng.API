@@ -367,6 +367,7 @@ namespace FakeXiecheng.API.Controllers
         //[Authorize(Roles = "Admin, Author")]
         [Authorize(Roles = "Admin")]
         [Authorize(Roles = "Author")]
+        //[Authorize(Policy = "Admin")]
         public async Task<IActionResult> CreateTouristRoute(TouristRouteForCreationDto touristRouteDto)
         {
             var touristRouteModel = _mapper.Map<TouristRoute>(touristRouteDto);
