@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using FakeXiecheng.API.Helpers;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -67,6 +68,7 @@ namespace FakeXiecheng.API.Controllers
                 new Claim(ClaimTypes.Role, "Author"),
             };
 
+            /*
             var secret = _configuration["Authentication:SecretKey"];
             var secretByte = Encoding.UTF8.GetBytes(secret);
             var signingKey = new SymmetricSecurityKey(secretByte);
@@ -84,6 +86,15 @@ namespace FakeXiecheng.API.Controllers
             );
 
             var tokenJson = new JwtSecurityTokenHandler().WriteToken(token);
+            */
+
+            var tokenJson = JwtTokenHelper.GenerateTokenJson(
+                secretKey: _configuration["Authentication:SecretKey"],
+                issuer: _configuration["Authentication:Issuer"],
+                audience: _configuration["Authentication:Audience"],
+                claims,
+                expiresDays: Int32.TryParse(_configuration["Authentication:ExpiresDays"], out int expiresDays) ? expiresDays : 0
+            );
 
             return Ok(new { 
                 access_token = tokenJson 

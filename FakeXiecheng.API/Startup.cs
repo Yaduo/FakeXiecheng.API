@@ -56,7 +56,6 @@ namespace FakeXiecheng.API
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
-                    var secretByte = Encoding.UTF8.GetBytes(Configuration["Authentication:SecretKey"]);
                     options.TokenValidationParameters = new TokenValidationParameters()
                     {
                         ValidateIssuer = true,
@@ -67,7 +66,7 @@ namespace FakeXiecheng.API
 
                         ValidateLifetime = true,
 
-                        IssuerSigningKey = new SymmetricSecurityKey(secretByte)
+                        IssuerSigningKey = JwtTokenHelper.GenerateSigningKey(Configuration["Authentication:SecretKey"])
                     };
                 });
 
