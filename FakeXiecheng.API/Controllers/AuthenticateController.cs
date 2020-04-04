@@ -54,7 +54,9 @@ namespace FakeXiecheng.API.Controllers
             {
                 new Claim(JwtRegisteredClaimNames.Sub, "fake_user_id"),
                 new Claim("custome", "something_2"),
-
+                new Claim(ClaimTypes.Email, "Bob@fmail.com"),
+                new Claim(ClaimTypes.Role, "Admin"),
+                new Claim(ClaimTypes.Role, "Author"),
             };
 
             var secret = "sui_bian_xie_dian_zifuchuan";
