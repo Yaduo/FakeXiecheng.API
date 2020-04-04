@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Security.Claims;
 using AutoMapper;
+using FakeXiecheng.API.AuthorizationRequriement;
 using FakeXiecheng.API.DbContexts;
 using FakeXiecheng.API.Helpers;
 using FakeXiecheng.API.Services;
@@ -19,6 +20,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json.Serialization;
+using static FakeXiecheng.API.AuthorizationRequriement.FakeXiechengRequireClaim;
 
 namespace FakeXiecheng.API
 {
@@ -51,13 +53,25 @@ namespace FakeXiecheng.API
 
             services.AddAuthorization(option =>
             {
-                var defaultAuthBuilder = new AuthorizationPolicyBuilder();
-                var defaultAuthPolicy = defaultAuthBuilder
-                .RequireAuthenticatedUser()  
-                .RequireClaim(ClaimTypes.Role)
-                .Build();
-                option.DefaultPolicy = defaultAuthPolicy;
+                //var defaultAuthBuilder = new AuthorizationPolicyBuilder();
+                //var defaultAuthPolicy = defaultAuthBuilder
+                //.RequireAuthenticatedUser()  
+                //.RequireClaim(ClaimTypes.Role)
+                //.Build();
+                //option.DefaultPolicy = defaultAuthPolicy;
+
+                //option.AddPolicy("Claim.Role", policyBuilder => 
+                //{
+                //    policyBuilder.RequireClaim(ClaimTypes.Role);
+                //});
+
+                option.AddPolicy("Claim.Role", policyBuilder =>
+                {
+                    policyBuilder.AddRequirements(new FakeXiechengRequireClaim(ClaimTypes.Role));
+                });
             });
+
+            services.AddScoped<IAuthorizationHandler, FakeXiechengRequireClaimHandler>();
 
             services.AddResponseCaching();
 
