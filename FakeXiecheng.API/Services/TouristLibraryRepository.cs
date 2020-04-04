@@ -114,8 +114,8 @@ namespace FakeXiecheng.API.Services
             //var calculate = CpuFullyLoadedTasker.ComplicatCalculation();
 
             // asynchronous 方式
-            _logger.LogInformation($"ThreadId when entering GetCpuFullyLoadedAsync() : {System.Threading.Thread.CurrentThread.ManagedThreadId}");
-            var calculate = await GetCpuFullyLoadedAsync();
+            //_logger.LogInformation($"ThreadId when entering GetCpuFullyLoadedAsync() : {System.Threading.Thread.CurrentThread.ManagedThreadId}");
+            //var calculate = await GetCpuFullyLoadedAsync();
 
             if (routeId == Guid.Empty)
             {

@@ -288,21 +288,21 @@ namespace FakeXiecheng.API.Controllers
             //var getFakeImageExternalUrl = _urlHelper.Link("GetFakeImageRequest", null);
             //var fakeImageContent = await _touristRouteRepository.DownloadFakeImageFromExternalAPI(getFakeImageExternalUrl);
 
-            var getFakeImageExternalUrls = new List<string>()
-            {
-                _urlHelper.Link("GetFakeImageRequest", null),
-                _urlHelper.Link("GetFakeImageRequest", null) + "?returnFault=true",
-                _urlHelper.Link("GetFakeImageRequest", null)
-            };
-            var fakeImageContentList = await _touristRouteRepository.DownloadFakeImageListFromExternalAPI(getFakeImageExternalUrls);
+            //var getFakeImageExternalUrls = new List<string>()
+            //{
+            //    _urlHelper.Link("GetFakeImageRequest", null),
+            //    _urlHelper.Link("GetFakeImageRequest", null) + "?returnFault=true",
+            //    _urlHelper.Link("GetFakeImageRequest", null)
+            //};
+            //var fakeImageContentList = await _touristRouteRepository.DownloadFakeImageListFromExternalAPI(getFakeImageExternalUrls);
 
-            //return Ok(results);
-            return Ok(new
-            {
-                results,
-                //fakeImageContent
-                fakeImageContentList
-            });
+            return Ok(results);
+            //return Ok(new
+            //{
+            //    results,
+            //    //fakeImageContent
+            //    fakeImageContentList
+            //});
         }
 
         [HttpGet("collection/({ids})", Name = "GetAuthorCollection")]
@@ -363,7 +363,7 @@ namespace FakeXiecheng.API.Controllers
             "application/vnd.fakeXiecheng.createTouristRoute+json"
         )]
         [Consumes("application/json", "application/vnd.fakeXiecheng.createTouristRoute+json")]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> CreateTouristRoute(TouristRouteForCreationDto touristRouteDto)
         {
             var touristRouteModel = _mapper.Map<TouristRoute>(touristRouteDto);
