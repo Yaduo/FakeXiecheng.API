@@ -363,11 +363,12 @@ namespace FakeXiecheng.API.Controllers
             "application/vnd.fakeXiecheng.createTouristRoute+json"
         )]
         [Consumes("application/json", "application/vnd.fakeXiecheng.createTouristRoute+json")]
-        [Authorize(Policy = "ClaimEmailMustToHave")]
+        //[Authorize(Policy = "ClaimEmailMustToHave")]
         //[Authorize(Roles = "Admin, Author")]
-        [Authorize(Roles = "Admin")]
-        [Authorize(Roles = "Author")]
+        //[Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Author")]
         //[Authorize(Policy = "Admin")]
+        [Authorize]
         public async Task<IActionResult> CreateTouristRoute(TouristRouteForCreationDto touristRouteDto)
         {
             var touristRouteModel = _mapper.Map<TouristRoute>(touristRouteDto);

@@ -2,12 +2,14 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
+using System.Text;
 using AutoMapper;
 using FakeXiecheng.API.AuthorizationRequriement;
 using FakeXiecheng.API.DbContexts;
 using FakeXiecheng.API.Helpers;
 using FakeXiecheng.API.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -19,6 +21,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
 using static FakeXiecheng.API.AuthorizationRequriement.FakeXiechengRequireClaim;
 
@@ -36,19 +39,39 @@ namespace FakeXiecheng.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(options =>
+            //services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme) // add DefaultAuthenticateScheme
+            //    .AddCookie(options =>
+            //    {
+            //        options.Cookie.Name = "FakeXiecheng.Cookie";
+            //        options.Events.OnRedirectToAccessDenied = AuthenticationHelper.CookieAuthReplaceRedirector(
+            //            HttpStatusCode.Forbidden,
+            //            options.Events.OnRedirectToAccessDenied
+            //        );
+            //        options.Events.OnRedirectToLogin = AuthenticationHelper.CookieAuthReplaceRedirector(
+            //            HttpStatusCode.Unauthorized,
+            //            options.Events.OnRedirectToLogin
+            //        );
+            //        //options.LoginPath = "/api";
+            //    });
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
                 {
-                    options.Cookie.Name = "FakeXiecheng.Cookie";
-                    options.Events.OnRedirectToAccessDenied = AuthenticationHelper.CookieAuthReplaceRedirector(
-                        HttpStatusCode.Forbidden,
-                        options.Events.OnRedirectToAccessDenied
-                    );
-                    options.Events.OnRedirectToLogin = AuthenticationHelper.CookieAuthReplaceRedirector(
-                        HttpStatusCode.Unauthorized,
-                        options.Events.OnRedirectToLogin
-                    );
-                    //options.LoginPath = "/api";
+                    var secret = "sui_bian_xie_dian_zifuchuan";
+                    var secretByte = Encoding.UTF8.GetBytes(secret);
+                    var signingKey = new SymmetricSecurityKey(secretByte);
+
+                    options.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = "fakeXiecheng.com",
+
+                        ValidateAudience = true,
+                        ValidAudience = "fakeXiecheng.com",
+
+                        ValidateLifetime = true,
+
+                        IssuerSigningKey = signingKey
+                    };
                 });
 
             services.AddAuthorization(option =>
