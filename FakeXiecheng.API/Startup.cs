@@ -56,21 +56,18 @@ namespace FakeXiecheng.API
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {
-                    var secret = "sui_bian_xie_dian_zifuchuan";
-                    var secretByte = Encoding.UTF8.GetBytes(secret);
-                    var signingKey = new SymmetricSecurityKey(secretByte);
-
+                    var secretByte = Encoding.UTF8.GetBytes(Configuration["Authentication:SecretKey"]);
                     options.TokenValidationParameters = new TokenValidationParameters()
                     {
                         ValidateIssuer = true,
-                        ValidIssuer = "fakeXiecheng.com",
+                        ValidIssuer = Configuration["Authentication:Issuer"],
 
                         ValidateAudience = true,
-                        ValidAudience = "fakeXiecheng.com",
+                        ValidAudience = Configuration["Authentication:Audience"],
 
                         ValidateLifetime = true,
 
-                        IssuerSigningKey = signingKey
+                        IssuerSigningKey = new SymmetricSecurityKey(secretByte)
                     };
                 });
 
@@ -156,8 +153,7 @@ namespace FakeXiecheng.API
 
             services.AddDbContext<TouristLibraryContext>(options =>
             {
-                options.UseSqlServer(
-                    @"Server=localhost; Database=FakeXiechengData; User Id=sa; Password=PaSSword12!;");
+                options.UseSqlServer(Configuration["DbContext:ConnectionString"]);
             });
 
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();

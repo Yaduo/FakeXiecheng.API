@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -18,6 +19,13 @@ namespace FakeXiecheng.API.Controllers
     [Route("auth")]
     public class AuthenticateController : Controller
     {
+        private readonly IConfiguration _configuration;
+
+        public AuthenticateController(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         [AllowAnonymous]
         [HttpGet("loginByCookie")]
         public IActionResult LoginByCookie()
@@ -59,7 +67,7 @@ namespace FakeXiecheng.API.Controllers
                 new Claim(ClaimTypes.Role, "Author"),
             };
 
-            var secret = "sui_bian_xie_dian_zifuchuan";
+            var secret = _configuration["Authentication:SecretKey"];
             var secretByte = Encoding.UTF8.GetBytes(secret);
             var signingKey = new SymmetricSecurityKey(secretByte);
             var signingAlgorithm = SecurityAlgorithms.HmacSha256;
@@ -67,8 +75,8 @@ namespace FakeXiecheng.API.Controllers
             var signingCredentials = new SigningCredentials(signingKey, signingAlgorithm);
 
             var token = new JwtSecurityToken(
-                issuer: "fakeXiecheng.com", 
-                audience: "fakeXiecheng.com",
+                issuer: _configuration["Authentication:Issuer"], 
+                audience: _configuration["Authentication:Audience"],
                 claims,
                 notBefore: DateTime.UtcNow,
                 expires: DateTime.UtcNow.AddDays(1),
