@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using FakeXiecheng.API.Dtos;
 using FakeXiecheng.API.Helpers;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -96,9 +97,19 @@ namespace FakeXiecheng.API.Controllers
                 expiresDays: Int32.TryParse(_configuration["Authentication:ExpiresDays"], out int expiresDays) ? expiresDays : 0
             );
 
-            return Ok(new { 
-                access_token = tokenJson 
+            return Ok(new
+            {
+                access_token = tokenJson
             });
+        }
+
+        [AllowAnonymous]
+        [HttpPost("Register")]
+        public IActionResult Register([FromBody] RegisterDto registerDto)
+        {
+            // 创建新用户，并向数据库写入用户数据
+
+            return Ok();
         }
 
 
