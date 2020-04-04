@@ -23,6 +23,7 @@ namespace FakeXiecheng.API.Controllers
             {
                 new Claim(ClaimTypes.Name, "Bob"),
                 new Claim(ClaimTypes.Email, "Bob@fmail.com"),
+                new Claim(ClaimTypes.Role, "Admin"),
             };
 
             var licenseClaims = new List<Claim>()
