@@ -65,9 +65,9 @@ namespace FakeXiecheng.API
                 //    policyBuilder.RequireClaim(ClaimTypes.Role);
                 //});
 
-                option.AddPolicy("ClaimRoleMustToHave", policyBuilder =>
+                option.AddPolicy("ClaimEmailMustToHave", policyBuilder =>
                 {
-                    policyBuilder.AddRequirements(new FakeXiechengRequireClaim("AdminRole"));
+                    policyBuilder.AddRequirements(new FakeXiechengRequireClaim(ClaimTypes.Email));
                 });
             });
 
