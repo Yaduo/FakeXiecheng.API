@@ -19,11 +19,13 @@ namespace FakeXiecheng.API.Controllers
         [HttpGet("loginByCookie")]
         public IActionResult LoginByCookie()
         {
-            var grandmaClaims = new List<Claim>()
+            var identityClaims = new List<Claim>()
             {
                 new Claim(ClaimTypes.Name, "Bob"),
                 new Claim(ClaimTypes.Email, "Bob@fmail.com"),
-                new Claim("Grandma.Says", "Very nice boi."),
+                new Claim("says", "Very nice boi."),
+                new Claim(ClaimTypes.DateOfBirth, "01/12/2020"),
+
             };
 
             var licenseClaims = new List<Claim>()
@@ -32,7 +34,7 @@ namespace FakeXiecheng.API.Controllers
                 new Claim("DrivingLicense", "A+"),
             };
 
-            var grandmaIdentity = new ClaimsIdentity(grandmaClaims, "Grandma Identity");
+            var grandmaIdentity = new ClaimsIdentity(identityClaims, "Identity");
             var licenseIdentity = new ClaimsIdentity(licenseClaims, "Government");
 
             var userPrincipal = new ClaimsPrincipal(new[] { grandmaIdentity, licenseIdentity });

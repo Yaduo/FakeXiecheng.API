@@ -1,11 +1,13 @@
 using System;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using AutoMapper;
 using FakeXiecheng.API.DbContexts;
 using FakeXiecheng.API.Helpers;
 using FakeXiecheng.API.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -46,6 +48,16 @@ namespace FakeXiecheng.API
                     );
                     //options.LoginPath = "/api";
                 });
+
+            services.AddAuthorization(option =>
+            {
+                var defaultAuthBuilder = new AuthorizationPolicyBuilder();
+                var defaultAuthPolicy = defaultAuthBuilder
+                .RequireAuthenticatedUser()  
+                .RequireClaim(ClaimTypes.DateOfBirth)
+                .Build();
+                option.DefaultPolicy = defaultAuthPolicy;
+            });
 
             services.AddResponseCaching();
 
