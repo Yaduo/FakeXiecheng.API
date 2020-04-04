@@ -23,12 +23,10 @@ namespace FakeXiecheng.API.Controllers
             {
                 new Claim(ClaimTypes.Name, "Bob"),
                 new Claim(ClaimTypes.Email, "Bob@fmail.com"),
-                new Claim("AdminRole", "not_important_string"),
             };
 
             var licenseClaims = new List<Claim>()
             {
-                new Claim(ClaimTypes.Name, "Bob K Foo"),
                 new Claim("DrivingLicense", "A+"),
             };
 
