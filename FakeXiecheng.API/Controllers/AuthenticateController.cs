@@ -24,7 +24,7 @@ namespace FakeXiecheng.API.Controllers
                 new Claim(ClaimTypes.Name, "Bob"),
                 new Claim(ClaimTypes.Email, "Bob@fmail.com"),
                 new Claim("says", "Very nice boi."),
-                new Claim(ClaimTypes.DateOfBirth, "01/12/2020"),
+                new Claim(ClaimTypes.Role, "admin"),
 
             };
 

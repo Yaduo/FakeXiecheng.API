@@ -54,7 +54,7 @@ namespace FakeXiecheng.API
                 var defaultAuthBuilder = new AuthorizationPolicyBuilder();
                 var defaultAuthPolicy = defaultAuthBuilder
                 .RequireAuthenticatedUser()  
-                .RequireClaim(ClaimTypes.DateOfBirth)
+                .RequireClaim(ClaimTypes.Role)
                 .Build();
                 option.DefaultPolicy = defaultAuthPolicy;
             });
