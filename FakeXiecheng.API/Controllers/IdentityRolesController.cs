@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using FakeXiecheng.API.Dtos;
@@ -16,16 +17,19 @@ namespace FakeXiecheng.API.Controllers
     public class IdentityRolesController : ControllerBase
     {
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly UserManager<IdentityUser> _userManager;
         private readonly ITouristRouteRepository _touristRouteRepository;
         private readonly IMapper _mapper;
 
         public IdentityRolesController(
             RoleManager<IdentityRole> roleManager,
+            UserManager<IdentityUser> userManager,
             ITouristRouteRepository touristRouteRepository,
             IMapper mapper
         )
         {
             _roleManager = roleManager;
+            _userManager = userManager;
             _touristRouteRepository = touristRouteRepository;
             _mapper = mapper;
         }
@@ -46,5 +50,24 @@ namespace FakeXiecheng.API.Controllers
             await _roleManager.CreateAsync(role);
             return NoContent();
         }
+
+        [HttpPost("{roleName}/user/{userName}")]
+        public async Task<IActionResult> AddRoleToUserAsync(string roleName, string userName)
+        {
+            var user = await _userManager.FindByNameAsync(userName);
+            if(user == null)
+            {
+                return NotFound("User not found");
+            }
+            var role = await _roleManager.FindByNameAsync(roleName);
+            if (role == null)
+            {
+                return NotFound("Role {roleName} not found");
+            }
+            await _userManager.AddToRoleAsync(user, roleName);
+
+            return NoContent();
+        }
+
     }
 }

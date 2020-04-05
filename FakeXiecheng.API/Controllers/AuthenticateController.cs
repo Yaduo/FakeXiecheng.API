@@ -25,16 +25,19 @@ namespace FakeXiecheng.API.Controllers
         private readonly IConfiguration _configuration;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
         public AuthenticateController(
             IConfiguration configuration,
             UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager
+            SignInManager<IdentityUser> signInManager,
+            RoleManager<IdentityRole> roleManager
         )
         {
             _configuration = configuration;
             _userManager = userManager;
             _signInManager = signInManager;
+            _roleManager = roleManager;
         }
 
         [AllowAnonymous]
@@ -82,15 +85,27 @@ namespace FakeXiecheng.API.Controllers
             }
 
             var user = await _userManager.FindByNameAsync(loginDto.Email);
+            var roleNames = await _userManager.GetRolesAsync(user);
 
-            var claims = new[]
+            var claims = new List<Claim>()
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-                new Claim("custome", "something_2"),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, "Admin"),
-                new Claim(ClaimTypes.Role, "Author"),
+                new Claim(ClaimTypes.Email, user.Email)
             };
+            foreach (var roleName in roleNames)
+            {
+                var roleClaims = new Claim(ClaimTypes.Role, roleName);
+                claims.Add(roleClaims);
+            }
+
+            //var claims = new[]
+            //{
+            //    new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+            //    new Claim("custome", "something_2"),
+            //    new Claim(ClaimTypes.Email, user.Email),
+            //    new Claim(ClaimTypes.Role, "Admin"),
+            //    new Claim(ClaimTypes.Role, "Author"),
+            //};
 
             /*
             var secret = _configuration["Authentication:SecretKey"];
@@ -150,6 +165,7 @@ namespace FakeXiecheng.API.Controllers
 
             return NoContent();
         }
+
 
 
     }
