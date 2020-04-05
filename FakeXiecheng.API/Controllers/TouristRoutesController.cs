@@ -363,6 +363,7 @@ namespace FakeXiecheng.API.Controllers
             "application/vnd.fakeXiecheng.createTouristRoute+json"
         )]
         [Consumes("application/json", "application/vnd.fakeXiecheng.createTouristRoute+json")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         [Authorize(Policy = "ClaimEmailMustToHave")]
         //[Authorize(Roles = "Admin, Author")]
         [Authorize(Roles = "Admin")]
