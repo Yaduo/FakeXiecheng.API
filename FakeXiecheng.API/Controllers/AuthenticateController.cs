@@ -9,6 +9,7 @@ using FakeXiecheng.API.Dtos;
 using FakeXiecheng.API.Helpers;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -22,10 +23,18 @@ namespace FakeXiecheng.API.Controllers
     public class AuthenticateController : Controller
     {
         private readonly IConfiguration _configuration;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
 
-        public AuthenticateController(IConfiguration configuration)
+        public AuthenticateController(
+            IConfiguration configuration,
+            UserManager<IdentityUser> userManager,
+            SignInManager<IdentityUser> signInManager
+        )
         {
             _configuration = configuration;
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         [AllowAnonymous]
@@ -58,13 +67,27 @@ namespace FakeXiecheng.API.Controllers
 
         [AllowAnonymous]
         [HttpGet("loginByJWT")]
-        public IActionResult LoginByJWT()
+        public async Task<IActionResult> LoginByJWT(LoginDto loginDto)
         {
+
+            if (!ModelState.IsValid)
+            {
+                return Forbid();
+            }
+
+            var loginResult = await _signInManager.PasswordSignInAsync(loginDto.Email, loginDto.Password, false, false);
+            if (!loginResult.Succeeded)
+            {
+                return Forbid();
+            }
+
+            var user = await _userManager.FindByNameAsync(loginDto.Email);
+
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, "fake_user_id"),
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id),
                 new Claim("custome", "something_2"),
-                new Claim(ClaimTypes.Email, "Bob@fmail.com"),
+                new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.Role, "Admin"),
                 new Claim(ClaimTypes.Role, "Author"),
             };
@@ -105,11 +128,27 @@ namespace FakeXiecheng.API.Controllers
 
         [AllowAnonymous]
         [HttpPost("Register")]
-        public IActionResult Register([FromBody] RegisterDto registerDto)
+        public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
         {
             // 创建新用户，并向数据库写入用户数据
+            if (!ModelState.IsValid)
+            {
+                return Forbid();
+            }
 
-            return Ok();
+            var user = new IdentityUser()
+            {
+                UserName = registerDto.Email,
+                Email = registerDto.Email
+            };
+
+            var result = await _userManager.CreateAsync(user, registerDto.Password);
+            if(!result.Succeeded)
+            {
+                return Forbid();
+            }
+
+            return NoContent();
         }
 
 

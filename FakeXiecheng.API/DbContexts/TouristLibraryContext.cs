@@ -1,4 +1,5 @@
 ﻿using FakeXiecheng.API.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System;
@@ -8,7 +9,7 @@ using System.Reflection;
 
 namespace FakeXiecheng.API.DbContexts
 {
-    public class TouristLibraryContext : DbContext
+    public class TouristLibraryContext : IdentityDbContext
     {
         public TouristLibraryContext(DbContextOptions<TouristLibraryContext> options)
            : base(options)

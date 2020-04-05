@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -154,6 +155,9 @@ namespace FakeXiecheng.API
             {
                 options.UseSqlServer(Configuration["DbContext:ConnectionString"]);
             });
+
+            services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<TouristLibraryContext>();
 
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
 
