@@ -2,6 +2,7 @@
 using FakeXiecheng.API.Dtos;
 using FakeXiecheng.API.Helpers;
 using FakeXiecheng.API.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -211,6 +212,11 @@ namespace FakeXiecheng.API.Services
                 return p;
             });
             await _context.TouristRoutePictures.AddRangeAsync(picturesToAdd);
+        }
+
+        public async Task<IEnumerable<IdentityRole>> GetAllIdentityRolesAsync()
+        {
+            return await _context.Roles.ToListAsync();
         }
 
         public async Task<bool> SaveAsync()
