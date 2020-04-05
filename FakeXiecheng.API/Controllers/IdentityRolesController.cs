@@ -38,5 +38,13 @@ namespace FakeXiecheng.API.Controllers
             var roles = await _touristRouteRepository.GetAllIdentityRolesAsync();
             return Ok(_mapper.Map<IEnumerable<IdentityRoleDto>>(roles));
         }
+
+        [HttpPost]
+        public async Task<IActionResult> AddIdentityRolesAsync(IdentityRoleForCreationDto dto)
+        {
+            var role = _mapper.Map<IdentityRole>(dto);
+            await _roleManager.CreateAsync(role);
+            return NoContent();
+        }
     }
 }

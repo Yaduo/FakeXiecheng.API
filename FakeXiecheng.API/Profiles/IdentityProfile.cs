@@ -13,6 +13,7 @@ namespace FakeXiecheng.API.Profiles
         public IdentityProfile()
         {
             CreateMap<IdentityRole, IdentityRoleDto>();
+            CreateMap<IdentityRoleForCreationDto, IdentityRole>();
         }
     }
 }
