@@ -6,6 +6,7 @@ using AutoMapper;
 using FakeXiecheng.API.Dtos;
 using FakeXiecheng.API.Models;
 using FakeXiecheng.API.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FakeXiecheng.API.Controllers
@@ -63,6 +64,8 @@ namespace FakeXiecheng.API.Controllers
 
 
         [HttpPost]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Roles = "Admin, Author")]
         public async Task<IActionResult> CreatePictureForAuthor(Guid touristRouteId, TouristRoutePictureForCreationDto picture)
         {
             if (!(await _touristRouteRepository.TouristRouteExistsAsync(touristRouteId)))
@@ -82,6 +85,8 @@ namespace FakeXiecheng.API.Controllers
         }
 
         [HttpPost("collection")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Roles = "Admin, Author")]
         public async Task<IActionResult> CreatePictureListForAuthor(Guid touristRouteId, IEnumerable<TouristRoutePictureForCreationDto> pictureList)
         {
             if (!(await _touristRouteRepository.TouristRouteExistsAsync(touristRouteId)))

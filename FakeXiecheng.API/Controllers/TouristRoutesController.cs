@@ -332,6 +332,8 @@ namespace FakeXiecheng.API.Controllers
             "application/vnd.fakeXiecheng.createTouristRouteWithTripAttribute+json"
         )]
         [Consumes("application/vnd.fakeXiecheng.createTouristRouteWithTripAttribute+json")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Roles = "Admin, Author")]
         public async Task<IActionResult> CreateTouristRouteWithTripAttribute(TouristRouteForCreationWithTripAttributeDto touristRouteDto)
         {
             var touristRouteModel = _mapper.Map<TouristRoute>(touristRouteDto);
@@ -365,9 +367,9 @@ namespace FakeXiecheng.API.Controllers
         [Consumes("application/json", "application/vnd.fakeXiecheng.createTouristRoute+json")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         [Authorize(Policy = "ClaimEmailMustToHave")]
-        //[Authorize(Roles = "Admin, Author")]
-        [Authorize(Roles = "Admin")]
-        [Authorize(Roles = "Author")]
+        [Authorize(Roles = "Admin, Author")]
+        //[Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Author")]
         //[Authorize(Policy = "Admin")]
         //[Authorize]
         public async Task<IActionResult> CreateTouristRoute(TouristRouteForCreationDto touristRouteDto)
@@ -402,6 +404,8 @@ namespace FakeXiecheng.API.Controllers
         }
 
         [HttpPut("{touristRouteId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Roles = "Admin, Author")]
         public async Task<IActionResult> UpdateTouristRouteById(Guid touristRouteId, TouristRouteForUpdateDto touristRouteDto)
         {
             var touristRouteFromRepo = await _touristRouteRepository.GetTouristRouteByIdAsync(touristRouteId);
@@ -430,6 +434,8 @@ namespace FakeXiecheng.API.Controllers
 
 
         [HttpPatch("{touristRouteId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Roles = "Admin, Author")]
         public async Task<IActionResult> PartiallyUpdateTouristRouteById(Guid touristRouteId,
             JsonPatchDocument<TouristRouteForUpdateDto> patchDocument)
         {
@@ -485,6 +491,8 @@ namespace FakeXiecheng.API.Controllers
         }
 
         [HttpDelete("{touristRouteId}", Name = "DeleteTouristRoute")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Roles = "Admin, Author")]
         public async Task<IActionResult> DeleteTouristRoute(Guid touristRouteId)
         {
             var touristRouteFromRepo = await _touristRouteRepository.GetTouristRouteByIdAsync(touristRouteId);

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using FakeXiecheng.API.Dtos;
 using FakeXiecheng.API.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -44,6 +45,8 @@ namespace FakeXiecheng.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddIdentityRolesAsync(IdentityRoleForCreationDto dto)
         {
             var role = _mapper.Map<IdentityRole>(dto);
@@ -52,6 +55,8 @@ namespace FakeXiecheng.API.Controllers
         }
 
         [HttpPost("{roleName}/user/{userName}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddRoleToUserAsync(string roleName, string userName)
         {
             var user = await _userManager.FindByNameAsync(userName);
