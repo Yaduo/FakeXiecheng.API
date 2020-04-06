@@ -9,7 +9,7 @@ using System.Reflection;
 
 namespace FakeXiecheng.API.DbContexts
 {
-    public class TouristLibraryContext : IdentityDbContext
+    public class TouristLibraryContext : IdentityDbContext<ApplicationUser>
     {
         public TouristLibraryContext(DbContextOptions<TouristLibraryContext> options)
            : base(options)
@@ -31,6 +31,11 @@ namespace FakeXiecheng.API.DbContexts
             var touristRoutePicturesJsonData = File.ReadAllText(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + @"/DbContexts/touristRoutePicturesMockData.json");
             IList<TouristRoutePicture> touristRoutePictures = JsonConvert.DeserializeObject<IList<TouristRoutePicture>>(touristRoutePicturesJsonData);
             modelBuilder.Entity<TouristRoutePicture>().HasData(touristRoutePictures);
+
+            // update ApplicationUser's foreigner key to link with Roles 
+            modelBuilder.Entity<ApplicationUser>(b => {
+                b.HasMany(x => x.UserRoles).WithOne().HasForeignKey(ur => ur.UserId).IsRequired();
+            });
 
             base.OnModelCreating(modelBuilder);
         }

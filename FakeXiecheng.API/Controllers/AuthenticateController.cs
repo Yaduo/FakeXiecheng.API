@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using FakeXiecheng.API.Dtos;
 using FakeXiecheng.API.Helpers;
+using FakeXiecheng.API.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -23,14 +24,14 @@ namespace FakeXiecheng.API.Controllers
     public class AuthenticateController : Controller
     {
         private readonly IConfiguration _configuration;
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
 
         public AuthenticateController(
             IConfiguration configuration,
-            UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager,
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
             RoleManager<IdentityRole> roleManager
         )
         {
@@ -151,7 +152,7 @@ namespace FakeXiecheng.API.Controllers
                 return Forbid();
             }
 
-            var user = new IdentityUser()
+            var user = new ApplicationUser()
             {
                 UserName = registerDto.Email,
                 Email = registerDto.Email

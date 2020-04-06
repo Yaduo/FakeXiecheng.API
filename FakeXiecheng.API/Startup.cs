@@ -7,6 +7,7 @@ using AutoMapper;
 using FakeXiecheng.API.AuthorizationRequriement;
 using FakeXiecheng.API.DbContexts;
 using FakeXiecheng.API.Helpers;
+using FakeXiecheng.API.Models;
 using FakeXiecheng.API.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -156,7 +157,7 @@ namespace FakeXiecheng.API
                 options.UseSqlServer(Configuration["DbContext:ConnectionString"]);
             });
 
-            services.AddIdentity<IdentityUser, IdentityRole>()
+            services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<TouristLibraryContext>();
 
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
